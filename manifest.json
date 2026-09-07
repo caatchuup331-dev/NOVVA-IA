@@ -1,7 +1,7 @@
 {
   "name": "NOVVA IA - Melhore suas imagens e vídeos",
   "short_name": "NOVVA IA",
-  "description": "Aplicativo NOVVA IA para edição e aprimoramento de imagens e vídeos",
+  "description": "Aplicativo NOVVA IA para aprimoramento de fotos e vídeos.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
@@ -9,16 +9,16 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
