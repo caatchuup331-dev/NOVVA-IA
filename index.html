@@ -1,0 +1,3161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCjZyA545dj-h8LFn3NGCz6bYzLIJgOBgA",
+    authDomain: "novva-ia-f9c84.firebaseapp.com",
+    projectId: "novva-ia-f9c84",
+    storageBucket: "novva-ia-f9c84.firebasestorage.app",
+    messagingSenderId: "292038847158",
+    appId: "1:292038847158:web:41deacbfdd5e1de1f19417",
+    measurementId: "G-LXH5V9FPY9"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script> 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>NOVVA IA — Melhore suas imagens e vídeos</title>
+  <link rel="manifest" href="manifest.json">
+<meta name="description" content="NOVVA IA — Melhore, ajuste, aumente a resolução e exporte suas imagens e vídeos em poucos segundos.">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   NOVVA IA — DESIGN TOKENS
+   ========================================================= */
+:root{
+  --bg:#000000;
+  --bg-elev-1:#0c0c0d;
+  --bg-elev-2:#131315;
+  --bg-elev-3:#1b1b1e;
+  --line:#232326;
+  --line-soft:#1a1a1c;
+  --fg:#ffffff;
+  --fg-soft:#c7c7cc;
+  --fg-muted:#84848c;
+  --fg-faint:#55555c;
+  --accent:#FF1133;
+  --accent-dim:#54121c;
+  --accent-glow:rgba(255,17,51,.28);
+  --success:#2ecf7a;
+  --warn:#ffb84d;
+  --radius-sm:10px;
+  --radius-md:16px;
+  --radius-lg:22px;
+  --radius-pill:999px;
+  --shadow-1:0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px rgba(0,0,0,.35);
+  --shadow-2:0 20px 60px rgba(0,0,0,.55);
+  --ff-display:'Sora', 'Manrope', system-ui, sans-serif;
+  --ff-body:'Manrope', system-ui, -apple-system, sans-serif;
+  --nav-h:72px;
+  --header-h:58px;
+  --safe-b:env(safe-area-inset-bottom, 0px);
+  --safe-t:env(safe-area-inset-top, 0px);
+  --ease:cubic-bezier(.22,.9,.32,1);
+}
+
+*,*::before,*::after{box-sizing:border-box; -webkit-tap-highlight-color:transparent; tap-highlight-color:transparent;}
+html,body{height:100%;}
+html{-webkit-tap-highlight-color:transparent;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--ff-body);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+  overscroll-behavior-y:none;
+  -webkit-tap-highlight-color:transparent;
+}
+button, a, input, select, textarea, [role="button"]{-webkit-tap-highlight-color:transparent;}
+h1,h2,h3,h4{font-family:var(--ff-display); margin:0; letter-spacing:-.01em;}
+p{margin:0;}
+button{font-family:inherit; cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+::selection{background:var(--accent); color:#fff;}
+a{color:inherit;}
+img{max-width:100%; display:block;}
+
+::-webkit-scrollbar{width:8px; height:8px;}
+::-webkit-scrollbar-thumb{background:#2a2a2e; border-radius:8px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+.visually-hidden{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:6px;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+}
+
+/* =========================================================
+   SPLASH SCREEN
+   ========================================================= */
+#splash{
+  position:fixed; inset:0; z-index:9999;
+  background:#000;
+  display:flex; align-items:center; justify-content:center;
+  transition:opacity .5s var(--ease);
+}
+#splash.hide{opacity:0; pointer-events:none;}
+#splash .splash-mark{
+  width:min(46vw, 190px);
+  height:auto;
+  object-fit:contain;
+  animation:splashPop .7s var(--ease) both;
+}
+@keyframes splashPop{
+  0%{opacity:0; transform:scale(.86);}
+  100%{opacity:1; transform:scale(1);}
+}
+
+/* =========================================================
+   APP SHELL
+   ========================================================= */
+#app{
+  min-height:100%;
+  display:flex; flex-direction:column;
+  opacity:0;
+}
+#app.ready{opacity:1;}
+
+.app-header{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between;
+  height:calc(var(--header-h) + var(--safe-t));
+  padding:calc(var(--safe-t) + 8px) 16px 8px;
+  background:rgba(0,0,0,.86);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line-soft);
+}
+.brand{
+  display:flex; align-items:center; gap:9px;
+  font-family:var(--ff-display); font-weight:800;
+  font-size:17px; letter-spacing:.01em; color:#fff;
+}
+.brand .dot{width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent-glow);}
+.header-actions{display:flex; align-items:center; gap:6px;}
+.icon-btn{
+  width:38px; height:38px; border-radius:var(--radius-pill);
+  border:1px solid var(--line); background:var(--bg-elev-1);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--fg-soft); transition:background .15s var(--ease), border-color .15s var(--ease), color .15s var(--ease);
+}
+.icon-btn:hover{background:var(--bg-elev-2); color:#fff;}
+.icon-btn:active{transform:scale(.95);}
+.icon-btn svg{width:18px; height:18px;}
+
+.header-title{font-size:15px; font-weight:700; color:var(--fg-soft);}
+
+/* =========================================================
+   MAIN / SECTIONS
+   ========================================================= */
+#main{
+  flex:1;
+  padding-bottom:calc(var(--nav-h) + var(--safe-b) + 18px);
+  min-height:calc(100vh - var(--header-h));
+}
+.view{display:none; animation:viewIn .28s var(--ease) both;}
+.view.active{display:block;}
+@keyframes viewIn{
+  from{opacity:0; transform:translateY(6px);}
+  to{opacity:1; transform:translateY(0);}
+}
+.container{max-width:640px; margin:0 auto; padding:0 18px;}
+
+/* ---------- HOME ---------- */
+.hero{padding:34px 0 22px;}
+.hero-eyebrow{
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:12.5px; color:var(--fg-muted); font-weight:600;
+  margin-bottom:14px;
+}
+.hero-eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--accent);}
+.hero h1{
+  font-size:clamp(28px, 7vw, 38px); line-height:1.12; font-weight:800; color:#fff;
+  max-width:15ch;
+}
+.hero p.sub{
+  margin-top:14px; color:var(--fg-soft); font-size:15.5px; line-height:1.55; max-width:38ch;
+}
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:9px;
+  border:none; border-radius:var(--radius-pill);
+  padding:15px 22px; font-weight:700; font-size:15px;
+  transition:transform .12s var(--ease), filter .15s var(--ease), background .15s var(--ease);
+  min-height:50px;
+}
+.btn:active{transform:scale(.97);}
+.btn-primary{
+  background:var(--accent); color:#fff;
+  box-shadow:0 10px 24px -8px var(--accent-glow);
+}
+.btn-primary:hover{filter:brightness(1.08);}
+.btn-secondary{
+  background:var(--bg-elev-2); color:#fff; border:1px solid var(--line);
+}
+.btn-secondary:hover{background:var(--bg-elev-3);}
+.btn-ghost{
+  background:transparent; color:var(--fg-soft); border:1px solid var(--line);
+}
+.btn-block{width:100%;}
+.btn-sm{padding:10px 16px; font-size:13.5px; min-height:auto; border-radius:var(--radius-pill);}
+.btn[disabled]{opacity:.4; pointer-events:none;}
+
+.select-cta{margin:22px 0 8px;}
+
+.kind-row{
+  display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;
+}
+.kind-chip{
+  flex:1; min-width:96px;
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  padding:16px 10px; border-radius:var(--radius-md);
+  background:var(--bg-elev-1); border:1px solid var(--line);
+  color:var(--fg-soft); font-size:12.5px; font-weight:600;
+  transition:border-color .15s var(--ease), background .15s var(--ease), color .15s var(--ease);
+}
+.kind-chip svg{width:20px; height:20px; color:var(--accent); transition:color .15s var(--ease);}
+.kind-chip:hover{border-color:#333; background:var(--bg-elev-2);}
+.kind-chip:hover svg{color:var(--accent);}
+
+.section-label{
+  font-size:12px; text-transform:none; color:var(--fg-muted); font-weight:700;
+  margin:30px 0 12px;
+}
+
+.card{
+  background:var(--bg-elev-1); border:1px solid var(--line);
+  border-radius:var(--radius-md); padding:16px;
+}
+.card + .card{margin-top:10px;}
+
+.tip-card{
+  display:flex; gap:12px; align-items:flex-start;
+  background:var(--bg-elev-1); border:1px solid var(--line);
+  border-radius:var(--radius-md); padding:14px 16px; margin-bottom:10px;
+}
+.tip-card .num{
+  width:26px; height:26px; border-radius:50%; background:var(--bg-elev-3);
+  color:var(--fg-soft); font-size:12px; font-weight:800;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.tip-card h4{font-size:14px; font-weight:700; margin-bottom:3px;}
+.tip-card p{font-size:13px; color:var(--fg-muted); line-height:1.5;}
+
+/* ---------- BOTTOM NAV ---------- */
+.bottom-nav{
+  position:fixed; left:0; right:0; bottom:0; z-index:50;
+  height:calc(var(--nav-h) + var(--safe-b));
+  padding-bottom:var(--safe-b);
+  background:rgba(4,4,5,.92);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--line-soft);
+  display:flex;
+}
+.nav-item{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+  background:transparent; border:none; color:var(--fg-faint);
+  font-size:11px; font-weight:600;
+  transition:color .15s var(--ease);
+  padding:6px 0;
+}
+.nav-item svg{width:22px; height:22px; transition:transform .15s var(--ease);}
+.nav-item.active{color:var(--accent);}
+.nav-item.active svg{transform:translateY(-1px);}
+.nav-item:active svg{transform:scale(.9);}
+.nav-item .nav-fab{
+  width:40px; height:40px; border-radius:50%; background:var(--accent);
+  display:flex; align-items:center; justify-content:center; margin-bottom:-2px;
+  box-shadow:0 8px 18px -6px var(--accent-glow);
+}
+.nav-item .nav-fab svg{width:22px; height:22px; color:#fff;}
+.nav-item.create-item{color:var(--fg-faint);}
+.nav-item.create-item.active{color:#fff;}
+
+/* ---------- HAMBURGER SIDE PANEL ---------- */
+.overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:60;
+  opacity:0; pointer-events:none; transition:opacity .25s var(--ease), backdrop-filter .25s var(--ease);
+}
+.overlay.show{opacity:1; pointer-events:auto; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);}
+.side-panel{
+  position:fixed; top:0; right:0; bottom:0; z-index:61;
+  width:min(74vw, 300px);
+  background:var(--bg-elev-1); border-left:1px solid var(--line);
+  transform:translateX(100%); transition:transform .32s var(--ease);
+  display:flex; flex-direction:column;
+  padding-top:var(--safe-t);
+}
+.side-panel.show{transform:translateX(0);}
+.side-panel-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 18px 10px;
+}
+.side-panel-head .brand{font-size:16px;}
+.side-panel-body{flex:1; overflow-y:auto; padding:6px 10px 24px;}
+.menu-item{
+  width:100%; display:flex; align-items:center; gap:12px;
+  background:transparent; border:none; color:var(--fg-soft);
+  padding:13px 10px; border-radius:var(--radius-sm); font-size:14.5px; font-weight:600;
+  text-align:left;
+}
+.menu-item:hover{background:var(--bg-elev-2); color:#fff;}
+.menu-item svg{width:18px; height:18px; color:var(--fg-muted); flex-shrink:0;}
+.menu-divider{height:1px; background:var(--line-soft); margin:10px 6px;}
+.menu-version{padding:14px 16px 4px; font-size:12px; color:var(--fg-faint);}
+
+/* ---------- TOASTS ---------- */
+#toast-stack{
+  position:fixed; left:0; right:0; bottom:calc(var(--nav-h) + var(--safe-b) + 14px);
+  z-index:80; display:flex; flex-direction:column; align-items:center; gap:8px; pointer-events:none;
+  padding:0 18px;
+}
+.toast{
+  max-width:420px; width:100%;
+  background:#151517; border:1px solid var(--line);
+  color:#fff; font-size:13.5px; font-weight:600;
+  padding:12px 16px; border-radius:var(--radius-pill);
+  box-shadow:var(--shadow-2);
+  display:flex; align-items:center; gap:9px;
+  opacity:0; transform:translateY(10px);
+  transition:opacity .25s var(--ease), transform .25s var(--ease);
+}
+.toast.show{opacity:1; transform:translateY(0);}
+.toast .dot{width:7px; height:7px; border-radius:50%; background:var(--accent); flex-shrink:0;}
+.toast.success .dot{background:var(--success);}
+.toast.error .dot{background:#ff4d4d;}
+
+/* ---------- GENERIC PAGE HEADER (sub pages) ---------- */
+.page-top{
+  display:flex; align-items:center; gap:10px; padding:18px 0 6px;
+}
+.back-btn{
+  width:36px; height:36px; border-radius:50%; border:1px solid var(--line);
+  background:var(--bg-elev-1); color:#fff; display:flex; align-items:center; justify-content:center;
+}
+.page-top h2{font-size:20px; font-weight:800;}
+
+.prose{color:var(--fg-soft); font-size:14px; line-height:1.7;}
+.prose h3{color:#fff; font-size:15px; margin:22px 0 8px; font-weight:700;}
+.prose p{margin-bottom:10px;}
+.placeholder{color:var(--fg-faint); font-style:normal;}
+
+/* =========================================================
+   FILE PICKER / DROPZONE ON CREATE
+   ========================================================= */
+.dropzone{
+  margin-top:18px; border:1.5px dashed var(--line); border-radius:var(--radius-lg);
+  padding:36px 20px; text-align:center; background:var(--bg-elev-1);
+}
+.dropzone svg{width:34px; height:34px; color:var(--fg-muted); margin:0 auto 14px;}
+.dropzone h3{font-size:15.5px; font-weight:700; margin-bottom:6px;}
+.dropzone p{font-size:13px; color:var(--fg-muted); margin-bottom:18px;}
+.tool-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:22px;}
+.tool-card{
+  background:var(--bg-elev-1); border:1px solid var(--line); border-radius:var(--radius-md);
+  padding:16px 8px; display:flex; flex-direction:column; align-items:center; gap:8px;
+  font-size:12px; font-weight:700; color:var(--fg-soft);
+}
+.tool-card svg{width:20px; height:20px; color:var(--accent);}
+
+/* =========================================================
+   EDITOR
+   ========================================================= */
+.editor-wrap{display:flex; flex-direction:column;}
+.editor-stage{
+  position:relative; background:#050505; border-radius:var(--radius-md);
+  margin-top:14px; overflow:hidden; border:1px solid var(--line);
+  aspect-ratio:4/3; display:flex; align-items:center; justify-content:center;
+}
+.editor-stage canvas, .editor-stage video{max-width:100%; max-height:100%; display:block;}
+.editor-stage.compare-mode canvas.preview-canvas{display:none;}
+
+.compare-box{position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;}
+.compare-box .layer{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;}
+.compare-box canvas{max-width:100%; max-height:100%;}
+.compare-box .layer.after-layer{clip-path:inset(0 0 0 50%);}
+.compare-divider{
+  position:absolute; top:0; bottom:0; left:50%; width:2px; background:#fff;
+  transform:translateX(-1px); cursor:ew-resize; touch-action:none;
+}
+.compare-divider .handle{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:34px; height:34px; border-radius:50%; background:#fff;
+  display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(0,0,0,.4);
+}
+.compare-divider .handle svg{width:16px; height:16px; color:#111;}
+.compare-tag{
+  position:absolute; top:10px; font-size:10.5px; font-weight:800; letter-spacing:.02em;
+  background:rgba(0,0,0,.55); color:#fff; padding:5px 10px; border-radius:var(--radius-pill);
+  backdrop-filter:blur(6px);
+}
+.compare-tag.before-tag{left:10px;}
+.compare-tag.after-tag{right:10px; background:rgba(255,17,51,.65);}
+
+.editor-toolbar{
+  display:flex; gap:8px; margin-top:12px; overflow-x:auto; padding-bottom:2px;
+  scrollbar-width:none;
+}
+.editor-toolbar::-webkit-scrollbar{display:none;}
+.tb-btn{
+  flex-shrink:0; display:flex; align-items:center; gap:7px;
+  padding:10px 14px; border-radius:var(--radius-pill);
+  background:var(--bg-elev-1); border:1px solid var(--line); color:var(--fg-soft);
+  font-size:12.5px; font-weight:700;
+}
+.tb-btn svg{width:15px; height:15px;}
+.tb-btn.active{background:var(--accent); border-color:var(--accent); color:#fff;}
+
+.panel{margin-top:16px; background:var(--bg-elev-1); border:1px solid var(--line); border-radius:var(--radius-md); padding:16px;}
+.panel-title{font-size:13px; font-weight:800; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between;}
+.panel-title .reset-link{font-size:12px; font-weight:700; color:var(--fg-muted); background:none; border:none;}
+.panel-title .reset-link:hover{color:var(--accent);}
+
+.slider-row{margin-bottom:16px;}
+.slider-row:last-child{margin-bottom:0;}
+.slider-row .slabel{
+  display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--fg-soft); margin-bottom:8px;
+}
+.slider-row .slabel span.val{color:var(--accent); font-variant-numeric:tabular-nums;}
+input[type="range"]{
+  -webkit-appearance:none; appearance:none; width:100%; height:4px;
+  background:var(--line); border-radius:4px; outline:none;
+  touch-action:none; -ms-touch-action:none;
+}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:18px; height:18px; border-radius:50%;
+  background:#fff; border:3px solid var(--accent); cursor:pointer; margin-top:-7px;
+  transition:transform .1s var(--ease);
+}
+input[type="range"]::-moz-range-thumb{
+  width:18px; height:18px; border-radius:50%; background:#fff; border:3px solid var(--accent); cursor:pointer;
+}
+input[type="range"]::-moz-range-track{background:var(--line); height:4px; border-radius:4px;}
+
+.opt-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+.opt-btn{
+  padding:12px 6px; border-radius:var(--radius-sm); background:var(--bg-elev-2);
+  border:1px solid var(--line); color:var(--fg-soft); font-size:12.5px; font-weight:700; text-align:center;
+}
+.opt-btn small{display:block; font-size:10.5px; color:var(--fg-muted); font-weight:600; margin-top:2px;}
+.opt-btn.active{background:var(--accent-dim); border-color:var(--accent); color:#fff;}
+.opt-btn.active small{color:#ffd0d8;}
+
+.upscale-badge{
+  display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700;
+  color:var(--fg-muted); background:var(--bg-elev-2); border:1px solid var(--line);
+  padding:6px 10px; border-radius:var(--radius-pill); margin-top:12px;
+}
+.upscale-badge .dot{width:6px; height:6px; border-radius:50%; background:var(--warn);}
+.upscale-badge.ai .dot{background:var(--success);}
+
+.editor-actions{display:flex; gap:10px; margin-top:18px;}
+.editor-actions .btn{flex:1;}
+
+/* video meta row */
+.meta-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+.meta-pill{
+  font-size:11.5px; font-weight:700; color:var(--fg-soft); background:var(--bg-elev-2);
+  border:1px solid var(--line); padding:6px 10px; border-radius:var(--radius-pill);
+}
+
+.notice{
+  display:flex; gap:10px; align-items:flex-start; background:var(--bg-elev-2);
+  border:1px solid var(--line); border-radius:var(--radius-md); padding:12px 14px; margin-top:12px;
+}
+.notice svg{width:16px; height:16px; color:var(--warn); flex-shrink:0; margin-top:1px;}
+.notice p{font-size:12.5px; color:var(--fg-muted); line-height:1.5;}
+
+/* =========================================================
+   COLLAGE
+   ========================================================= */
+.layout-scroll{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:10px;}
+.layout-opt{
+  aspect-ratio:1; border-radius:var(--radius-sm); background:var(--bg-elev-2);
+  border:1px solid var(--line); padding:6px; display:flex; align-items:center; justify-content:center;
+}
+.layout-opt.active{border-color:var(--accent); background:var(--accent-dim);}
+.layout-preview{width:100%; height:100%; position:relative;}
+.layout-preview div{position:absolute; background:#3a3a3f; border-radius:2px;}
+.layout-opt.active .layout-preview div{background:var(--accent);}
+
+.collage-thumbs{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+.collage-thumb{
+  width:64px; height:64px; border-radius:var(--radius-sm); overflow:hidden; position:relative;
+  border:1px solid var(--line); background:var(--bg-elev-2); touch-action:none; cursor:grab;
+}
+.collage-thumb.dragging{opacity:.4; cursor:grabbing;}
+.collage-thumb img{width:100%; height:100%; object-fit:cover; pointer-events:none;}
+.collage-thumb .rm{
+  position:absolute; top:2px; right:2px; width:18px; height:18px; border-radius:50%;
+  background:rgba(0,0,0,.7); color:#fff; display:flex; align-items:center; justify-content:center; border:none;
+}
+.collage-add{
+  width:64px; height:64px; border-radius:var(--radius-sm); border:1.5px dashed var(--line);
+  display:flex; align-items:center; justify-content:center; color:var(--fg-muted); background:var(--bg-elev-1);
+}
+#collage-canvas{touch-action:none; cursor:grab;}
+#collage-canvas:active{cursor:grabbing;}
+.collage-hint{font-size:12px; color:var(--fg-muted); margin-top:8px; line-height:1.5;}
+
+/* =========================================================
+   PROCESSING MODAL
+   ========================================================= */
+.modal-backdrop{
+  position:fixed; inset:0; z-index:90; background:rgba(0,0,0,.75);
+  display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none;
+  transition:opacity .25s var(--ease); padding:24px;
+}
+.modal-backdrop.show{opacity:1; pointer-events:auto;}
+.proc-modal{
+  width:100%; max-width:340px; background:var(--bg-elev-1); border:1px solid var(--line);
+  border-radius:var(--radius-lg); padding:26px 22px; text-align:center;
+  transform:scale(.94); transition:transform .25s var(--ease);
+}
+.modal-backdrop.show .proc-modal{transform:scale(1);}
+.proc-ring{width:56px; height:56px; margin:0 auto 18px; position:relative;}
+.proc-ring svg{width:100%; height:100%; animation:spin 1.1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.proc-modal h3{font-size:16px; font-weight:800; margin-bottom:6px;}
+.proc-modal p.sub{font-size:13px; color:var(--fg-muted); margin-bottom:18px;}
+.proc-step{font-size:12.5px; color:var(--fg-soft); font-weight:700; min-height:18px;}
+.proc-bar{height:4px; border-radius:4px; background:var(--line); margin-top:14px; overflow:hidden;}
+.proc-bar .fill{height:100%; width:30%; background:var(--accent); border-radius:4px; animation:indet 1.2s ease-in-out infinite;}
+@keyframes indet{
+  0%{transform:translateX(-100%);}
+  100%{transform:translateX(340%);}
+}
+
+/* result modal */
+.result-icon{
+  width:56px; height:56px; border-radius:50%; background:var(--accent-dim);
+  display:flex; align-items:center; justify-content:center; margin:0 auto 16px;
+}
+.result-icon svg{width:26px; height:26px; color:var(--accent);}
+.result-actions{display:flex; flex-direction:column; gap:8px; margin-top:18px;}
+
+/* =========================================================
+   EXPORT SHEET
+   ========================================================= */
+.sheet-backdrop{
+  position:fixed; inset:0; z-index:85; background:rgba(0,0,0,.6);
+  opacity:0; pointer-events:none; transition:opacity .25s var(--ease);
+}
+.sheet-backdrop.show{opacity:1; pointer-events:auto;}
+.sheet{
+  position:fixed; left:0; right:0; bottom:0; z-index:86;
+  background:var(--bg-elev-1); border-top:1px solid var(--line);
+  border-radius:22px 22px 0 0; padding:10px 20px calc(24px + var(--safe-b));
+  transform:translateY(100%); transition:transform .3s var(--ease);
+  max-height:82vh; overflow-y:auto;
+}
+.sheet.show{transform:translateY(0);}
+.sheet-handle{width:38px; height:4px; border-radius:4px; background:var(--line); margin:6px auto 16px;}
+.sheet h3{font-size:17px; font-weight:800; margin-bottom:14px;}
+.fmt-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+.fmt-btn{
+  padding:14px 6px; border-radius:var(--radius-md); background:var(--bg-elev-2);
+  border:1px solid var(--line); color:var(--fg-soft); font-size:13px; font-weight:800; text-align:center;
+}
+.fmt-btn small{display:block; font-size:10px; color:var(--fg-muted); font-weight:600; margin-top:3px;}
+.fmt-btn.active{background:var(--accent-dim); border-color:var(--accent); color:#fff;}
+.export-summary{margin-top:16px; display:flex; flex-direction:column; gap:8px;}
+.export-summary .row{display:flex; justify-content:space-between; font-size:13px;}
+.export-summary .row span:first-child{color:var(--fg-muted);}
+.export-summary .row span:last-child{font-weight:700;}
+.quality-row{display:flex; gap:8px; margin-top:14px;}
+.quality-row .opt-btn{flex:1;}
+
+/* =========================================================
+   PROJECTS / HISTORY
+   ========================================================= */
+.project-list{display:flex; flex-direction:column; gap:10px; margin-top:14px;}
+.project-item{
+  display:flex; align-items:center; gap:12px; background:var(--bg-elev-1);
+  border:1px solid var(--line); border-radius:var(--radius-md); padding:10px;
+}
+.project-thumb{
+  width:58px; height:58px; border-radius:var(--radius-sm); overflow:hidden; flex-shrink:0;
+  background:var(--bg-elev-3); display:flex; align-items:center; justify-content:center;
+}
+.project-thumb img{width:100%; height:100%; object-fit:cover;}
+.project-info{flex:1; min-width:0;}
+.project-info h4{font-size:13.5px; font-weight:700; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.project-info p{font-size:11.5px; color:var(--fg-muted);}
+.project-menu-btn{
+  width:32px; height:32px; border-radius:50%; border:none; background:transparent; color:var(--fg-muted);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+
+.empty-state{
+  text-align:center; padding:60px 20px 20px;
+}
+.empty-state .glyph{
+  width:64px; height:64px; border-radius:50%; background:var(--bg-elev-1); border:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center; margin:0 auto 18px; color:var(--fg-muted);
+}
+.empty-state .glyph svg{width:28px; height:28px;}
+.empty-state h3{font-size:16px; font-weight:800; margin-bottom:8px;}
+.empty-state p{font-size:13.5px; color:var(--fg-muted); max-width:32ch; margin:0 auto 20px; line-height:1.55;}
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+.set-row{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:14px 4px; border-bottom:1px solid var(--line-soft);
+}
+.set-row:last-child{border-bottom:none;}
+.set-row h4{font-size:14px; font-weight:700; margin-bottom:2px;}
+.set-row p{font-size:12px; color:var(--fg-muted);}
+.switch{
+  width:46px; height:27px; border-radius:var(--radius-pill); background:var(--bg-elev-3);
+  border:1px solid var(--line); position:relative; flex-shrink:0; transition:background .2s var(--ease);
+}
+.switch .knob{
+  position:absolute; top:2px; left:2px; width:21px; height:21px; border-radius:50%;
+  background:#fff; transition:transform .2s var(--ease);
+}
+.switch.on{background:var(--accent); border-color:var(--accent);}
+.switch.on .knob{transform:translateX(19px);}
+.select-inline{
+  background:var(--bg-elev-2); border:1px solid var(--line); color:#fff; font-size:13px; font-weight:700;
+  padding:8px 12px; border-radius:var(--radius-pill);
+}
+
+/* =========================================================
+   MISC HELPERS
+   ========================================================= */
+.hidden{display:none !important;}
+.flex-between{display:flex; align-items:center; justify-content:space-between;}
+.mt-8{margin-top:8px;} .mt-14{margin-top:14px;} .mt-20{margin-top:20px;} .mt-28{margin-top:28px;}
+.text-muted{color:var(--fg-muted); font-size:13px;}
+.text-center{text-align:center;}
+
+@media (min-width:760px){
+  .container{max-width:760px;}
+  .hero{padding:56px 0 30px;}
+  .tool-grid{grid-template-columns:repeat(6,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- Filtro SVG oculto usado pelo ajuste "Nitidez" do vídeo. Uma convolução
+     no compositor é muito mais barata do que processar pixel a pixel via JS,
+     então roda em tempo real (preview e exportação) sem travar o vídeo. -->
+<svg width="0" height="0" style="position:absolute; overflow:hidden;" aria-hidden="true">
+  <defs>
+    <filter id="video-sharpen-filter" x="-10%" y="-10%" width="120%" height="120%">
+      <feConvolveMatrix id="video-sharpen-kernel" order="3" kernelMatrix="0 0 0 0 1 0 0 0 0" divisor="1" edgeMode="duplicate" preserveAlpha="true"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- ============ SPLASH SCREEN ============ -->
+<div id="splash" aria-hidden="true">
+  <img class="splash-mark" src="https://i.postimg.cc/02p4zqZn/1000077885-removebg-preview.png" alt="">
+</div>
+
+<div id="app">
+
+  <!-- ============ HEADER ============ -->
+  <header class="app-header">
+    <div class="brand"><span class="dot"></span>NOVVA <span style="color:var(--accent); font-weight:600;">IA</span></div>
+    <div class="header-actions">
+      <button class="icon-btn" id="btn-hamburger" aria-label="Abrir menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ MAIN ============ -->
+  <main id="main">
+    <div class="container">
+
+      <!-- ---------- HOME VIEW ---------- -->
+      <section class="view active" id="view-home" data-view="home">
+        <div class="hero">
+          <div class="hero-eyebrow"><span class="dot"></span>NOVVA IA</div>
+          <h1>Dê uma nova qualidade às suas imagens e vídeos.</h1>
+          <p class="sub">Melhore, ajuste, aumente a resolução e exporte seus arquivos em poucos segundos.</p>
+          <div class="select-cta">
+            <button class="btn btn-primary btn-block" id="btn-select-file">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Selecionar arquivo
+            </button>
+          </div>
+          <div class="kind-row">
+            <button class="kind-chip" data-kind-cta="image">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              Imagem
+            </button>
+            <button class="kind-chip" data-kind-cta="video">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5.5" width="14" height="13" rx="2.5"/><path d="M21.5 8.2v7.6L16.5 12.7v-1.4z"/></svg>
+              Vídeo
+            </button>
+            <button class="kind-chip" data-kind-cta="collage">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+              Colagem
+            </button>
+          </div>
+        </div>
+
+        <div class="section-label">Como funciona</div>
+        <div class="tip-card"><div class="num">1</div><div><h4>Selecione</h4><p>Escolha uma imagem, um vídeo de até 15 segundos ou várias fotos para colagem.</p></div></div>
+        <div class="tip-card"><div class="num">2</div><div><h4>Melhore e ajuste</h4><p>Aumente a resolução e ajuste brilho, contraste, saturação e nitidez.</p></div></div>
+        <div class="tip-card"><div class="num">3</div><div><h4>Compare e exporte</h4><p>Veja o antes e depois lado a lado e exporte no formato que precisar.</p></div></div>
+
+        <div class="section-label" id="home-recent-label" style="display:none;">Projetos recentes</div>
+        <div class="project-list" id="home-recent-list"></div>
+
+        <div style="height:20px;"></div>
+      </section>
+
+      <!-- ---------- CREATE VIEW (picker) ---------- -->
+      <section class="view" id="view-create" data-view="create">
+        <div class="page-top"><h2>Criar</h2></div>
+        <p class="text-muted">Escolha um arquivo para começar a melhorar.</p>
+        <div class="dropzone" id="dropzone">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+          <h3>Arraste ou selecione um arquivo</h3>
+          <p>JPG, PNG, WEBP ou vídeos MP4 de até 15 segundos</p>
+          <button class="btn btn-primary" id="btn-select-file-2">Selecionar arquivo</button>
+        </div>
+
+        <div class="tool-grid">
+          <div class="tool-card" data-kind-cta="image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Imagem</div>
+          <div class="tool-card" data-kind-cta="video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5.5" width="14" height="13" rx="2.5"/><path d="M21.5 8.2v7.6L16.5 12.7v-1.4z"/></svg>Vídeo</div>
+          <div class="tool-card" data-kind-cta="collage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>Colagem</div>
+        </div>
+        <div style="height:20px;"></div>
+      </section>
+
+      <!-- ---------- IMAGE EDITOR VIEW ---------- -->
+      <section class="view" id="view-image-editor" data-view="image-editor">
+        <div class="page-top">
+          <button class="back-btn" data-back="home" aria-label="Voltar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <h2>Editar imagem</h2>
+        </div>
+
+        <div class="editor-stage" id="img-stage">
+          <canvas id="img-preview-canvas" class="preview-canvas"></canvas>
+          <div class="compare-box hidden" id="img-compare-box">
+            <div class="layer before-layer"><canvas id="cmp-before-canvas"></canvas></div>
+            <div class="layer after-layer"><canvas id="cmp-after-canvas"></canvas></div>
+            <span class="compare-tag before-tag">ANTES</span>
+            <span class="compare-tag after-tag">DEPOIS</span>
+            <div class="compare-divider" id="compare-divider">
+              <div class="handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4"/></svg></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-toolbar">
+          <button class="tb-btn active" data-tool="adjust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Ajustes</button>
+          <button class="tb-btn" data-tool="upscale"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>Upscale</button>
+          <button class="tb-btn" data-tool="compare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="8" height="16" rx="1.5"/><rect x="13" y="4" width="8" height="16" rx="1.5"/></svg>Comparar</button>
+        </div>
+
+        <!-- Adjust panel -->
+        <div class="panel" id="panel-adjust">
+          <div class="panel-title">Ajustes<button class="reset-link" id="btn-reset-adjust">Redefinir ajustes</button></div>
+          <div class="slider-row"><div class="slabel"><span>Brilho</span><span class="val" id="v-brightness">0</span></div><input type="range" id="s-brightness" min="-100" max="100" value="0"></div>
+          <div class="slider-row"><div class="slabel"><span>Contraste</span><span class="val" id="v-contrast">0</span></div><input type="range" id="s-contrast" min="-100" max="100" value="0"></div>
+          <div class="slider-row"><div class="slabel"><span>Saturação</span><span class="val" id="v-saturation">0</span></div><input type="range" id="s-saturation" min="-100" max="100" value="0"></div>
+          <div class="slider-row"><div class="slabel"><span>Iluminação</span><span class="val" id="v-exposure">0</span></div><input type="range" id="s-exposure" min="-100" max="100" value="0"></div>
+          <div class="slider-row"><div class="slabel"><span>Nitidez</span><span class="val" id="v-sharpness">0</span></div><input type="range" id="s-sharpness" min="0" max="100" value="0"></div>
+        </div>
+
+        <!-- Upscale panel -->
+        <div class="panel hidden" id="panel-upscale">
+          <div class="panel-title">Upscale</div>
+          <div class="opt-grid">
+            <button class="opt-btn active" data-upscale="1">Original<small id="dim-original">—</small></button>
+            <button class="opt-btn" data-upscale="2">2K<small>até 2560px</small></button>
+            <button class="opt-btn" data-upscale="4">4K<small>3840×2160</small></button>
+          </div>
+          <div class="upscale-badge" id="upscale-badge"><span class="dot"></span>Upscale local (Canvas) — proporção preservada</div>
+        </div>
+
+        <div class="editor-actions">
+          <button class="btn btn-secondary" id="btn-image-compare-toggle">Antes / Depois</button>
+          <button class="btn btn-primary" id="btn-image-export">Exportar</button>
+        </div>
+        <div style="height:20px;"></div>
+      </section>
+
+      <!-- ---------- VIDEO EDITOR VIEW ---------- -->
+      <section class="view" id="view-video-editor" data-view="video-editor">
+        <div class="page-top">
+          <button class="back-btn" data-back="home" aria-label="Voltar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <h2>Editar vídeo</h2>
+        </div>
+
+        <div class="editor-stage" id="video-stage">
+          <video id="video-preview" playsinline muted loop controls style="width:100%;height:100%;object-fit:contain;"></video>
+        </div>
+        <div class="meta-row">
+          <span class="meta-pill" id="video-duration-pill">Duração: —</span>
+          <span class="meta-pill" id="video-res-pill">Resolução: —</span>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Ajustes<button class="reset-link" id="btn-reset-video-adjust">Redefinir ajustes</button></div>
+          <div class="slider-row"><div class="slabel"><span>Brilho</span><span class="val" id="vv-brightness">0</span></div><input type="range" id="vs-brightness" min="-100" max="100" value="0"></div>
+          <div class="slider-row"><div class="slabel"><span>Contraste</span><span class="val" id="vv-contrast">0</span></div><input type="range" id="vs-contrast" min="-100" max="100" value="0"></div>
+          <div class="slider-row"><div class="slabel"><span>Saturação</span><span class="val" id="vv-saturation">0</span></div><input type="range" id="vs-saturation" min="-100" max="100" value="0"></div>
+          <div class="slider-row"><div class="slabel"><span>Iluminação</span><span class="val" id="vv-exposure">0</span></div><input type="range" id="vs-exposure" min="-100" max="100" value="0"></div>
+          <div class="slider-row"><div class="slabel"><span>Nitidez</span><span class="val" id="vv-sharpness">0</span></div><input type="range" id="vs-sharpness" min="0" max="100" value="0"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Upscale</div>
+          <div class="opt-grid" style="grid-template-columns:1fr;">
+            <button class="opt-btn active" data-vupscale="1">Original<small>—</small></button>
+          </div>
+        </div>
+
+        <div class="notice">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p>Este navegador processa vídeo localmente e exporta em WebM (compatível e sem perda de qualidade adicional). Conversão para MP4 nativo requer um serviço de backend — a arquitetura já está preparada para essa integração.</p>
+        </div>
+
+        <div class="editor-actions">
+          <button class="btn btn-primary btn-block" id="btn-video-export">Exportar vídeo</button>
+        </div>
+        <div style="height:20px;"></div>
+      </section>
+
+      <!-- ---------- COLLAGE VIEW ---------- -->
+      <section class="view" id="view-collage" data-view="collage">
+        <div class="page-top">
+          <button class="back-btn" data-back="home" aria-label="Voltar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <h2>Colagem</h2>
+        </div>
+
+        <div class="collage-thumbs" id="collage-thumbs">
+          <button class="collage-add" id="btn-collage-add" aria-label="Adicionar imagens">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+
+        <div class="editor-stage" id="collage-stage" style="margin-top:16px;">
+          <canvas id="collage-canvas"></canvas>
+        </div>
+        <p class="collage-hint">Arraste uma foto no quadro para reenquadrar. Arraste as miniaturas para reordenar.</p>
+
+        <div class="section-label">Layout</div>
+        <div class="layout-scroll" id="layout-scroll"></div>
+
+        <div class="section-label">Proporção</div>
+        <div class="opt-grid" id="ratio-grid" style="grid-template-columns:repeat(4,1fr);"></div>
+
+        <div class="panel mt-14">
+          <div class="panel-title">Ajustes da colagem</div>
+          <div class="slider-row"><div class="slabel"><span>Espaçamento</span><span class="val" id="v-gap">8</span></div><input type="range" id="s-gap" min="0" max="40" value="8"></div>
+          <div class="slider-row"><div class="slabel"><span>Arredondamento</span><span class="val" id="v-radius">0</span></div><input type="range" id="s-radius" min="0" max="40" value="0"></div>
+          <div class="opt-grid" style="margin-top:4px;">
+            <button class="opt-btn active" data-collage-bg="black">Fundo preto</button>
+            <button class="opt-btn" data-collage-bg="white">Fundo branco</button>
+          </div>
+        </div>
+
+        <div class="editor-actions">
+          <button class="btn btn-primary btn-block" id="btn-collage-export">Exportar colagem</button>
+        </div>
+        <div style="height:20px;"></div>
+      </section>
+
+      <!-- ---------- PROJECTS VIEW ---------- -->
+      <section class="view" id="view-projects" data-view="projects">
+        <div class="page-top"><h2>Projetos</h2></div>
+        <div id="projects-empty" class="empty-state hidden">
+          <div class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h5l2 3h11v9a2 2 0 01-2 2H3z"/></svg></div>
+          <h3>Nenhum projeto ainda</h3>
+          <p>Seus trabalhos aparecerão aqui depois que você processar uma imagem ou vídeo.</p>
+          <button class="btn btn-primary" id="btn-empty-create">Criar agora</button>
+        </div>
+        <div class="project-list" id="projects-list"></div>
+        <div style="height:20px;"></div>
+      </section>
+
+      <!-- ---------- SETTINGS VIEW ---------- -->
+      <section class="view" id="view-settings" data-view="settings">
+        <div class="page-top"><h2>Ajustes</h2></div>
+        <div class="card">
+          <div class="set-row">
+            <div><h4>Qualidade padrão</h4><p>Usada em novas exportações</p></div>
+            <select class="select-inline" id="set-quality">
+              <option value="0.6">Boa</option>
+              <option value="0.8" selected>Alta</option>
+              <option value="1">Máxima</option>
+            </select>
+          </div>
+          <div class="set-row">
+            <div><h4>Formato preferido</h4><p>Selecionado por padrão ao exportar</p></div>
+            <select class="select-inline" id="set-format">
+              <option value="jpg">JPG</option>
+              <option value="png" selected>PNG</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </div>
+          <div class="set-row">
+            <div><h4>Confirmar antes de excluir</h4><p>Pede confirmação ao apagar projetos</p></div>
+            <button class="switch on" id="set-confirm-delete" role="switch" aria-checked="true"><div class="knob"></div></button>
+          </div>
+        </div>
+        <div class="section-label">Armazenamento</div>
+        <div class="card">
+          <div class="set-row">
+            <div><h4>Limpar histórico</h4><p>Remove todos os projetos salvos neste dispositivo</p></div>
+            <button class="btn btn-ghost btn-sm" id="btn-clear-history">Limpar</button>
+          </div>
+        </div>
+        <div class="section-label">Sobre</div>
+        <div class="card">
+          <div class="set-row"><div><h4>Versão</h4><p>NOVVA IA</p></div><span class="text-muted">1.1.0</span></div>
+        </div>
+        <div style="height:20px;"></div>
+      </section>
+
+      <!-- ---------- ABOUT VIEW ---------- -->
+      <section class="view" id="view-about" data-view="about">
+        <div class="page-top">
+          <button class="back-btn" data-back="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <h2>Sobre NOVVA IA</h2>
+        </div>
+        <div class="prose">
+          <h3>Sobre Nós</h3>
+          <p>NOVVA IA é uma plataforma inteligente criada para transformar a qualidade dos seus conteúdos de forma simples, rápida e profissional.</p>
+          <p>Nosso aplicativo utiliza tecnologia de inteligência artificial para aprimorar imagens e vídeos, aumentando a resolução e os detalhes para resultados de alta qualidade, com suporte para upscaling de até 4K.</p>
+          <p>Além do upscaling, o NOVVA IA oferece ferramentas para você personalizar seus conteúdos do seu jeito. Faça ajustes de imagem, melhore detalhes, refine a qualidade e crie colagens de maneira prática, tudo em um só lugar.</p>
+          <p>Nossa missão é tornar tecnologias avançadas de edição e aprimoramento acessíveis para todos — desde quem deseja melhorar uma simples foto até criadores de conteúdo que precisam de resultados mais profissionais.</p>
+          <p>NOVVA IA — dê mais qualidade às suas ideias.</p>
+        </div>
+        <div style="height:20px;"></div>
+      </section>
+
+      <!-- ---------- HOW IT WORKS VIEW ---------- -->
+      <section class="view" id="view-how" data-view="how">
+        <div class="page-top">
+          <button class="back-btn" data-back="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <h2>Como funciona</h2>
+        </div>
+        <div class="tip-card"><div class="num">1</div><div><h4>Selecione</h4><p>Escolha uma imagem, um vídeo de até 15 segundos ou várias fotos para colagem.</p></div></div>
+        <div class="tip-card"><div class="num">2</div><div><h4>Melhore</h4><p>Aplique upscale local com Canvas ou prepare-se para conectar um modelo de IA.</p></div></div>
+        <div class="tip-card"><div class="num">3</div><div><h4>Ajuste</h4><p>Brilho, contraste, saturação, iluminação e nitidez em tempo real.</p></div></div>
+        <div class="tip-card"><div class="num">4</div><div><h4>Compare</h4><p>Arraste o divisor para ver antes e depois lado a lado.</p></div></div>
+        <div class="tip-card"><div class="num">5</div><div><h4>Exporte</h4><p>Baixe em JPG, PNG, PDF, SVG, WebM, GIF ou PPTX.</p></div></div>
+        <div style="height:20px;"></div>
+      </section>
+
+      <!-- ---------- HELP VIEW ---------- -->
+      <section class="view" id="view-help" data-view="help">
+        <div class="page-top">
+          <button class="back-btn" data-back="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <h2>Ajuda</h2>
+        </div>
+        <div class="prose">
+          <h3>Meu vídeo não pode ser selecionado</h3>
+          <p>O NOVVA IA aceita vídeos de até 15 segundos. Corte o vídeo antes de enviar ou escolha outro arquivo.</p>
+          <h3>O upscale 4K não parece "de IA"</h3>
+          <p>Sem um modelo de super-resolução conectado, o NOVVA IA usa um upscale local de alta qualidade via Canvas. A arquitetura já está preparada para conectar um modelo real de IA por backend.</p>
+          <h3>A exportação em MP4 não está disponível</h3>
+          <p>Alguns navegadores não conseguem gerar MP4 nativamente. Nesses casos, o NOVVA IA exporta em WebM, mantendo qualidade e sincronismo de áudio.</p>
+          <h3>Meus projetos somem se eu limpar os dados do navegador</h3>
+          <p>O histórico é salvo localmente neste dispositivo (IndexedDB). Limpar dados do navegador remove esses registros.</p>
+        </div>
+        <div style="height:20px;"></div>
+      </section>
+
+      <!-- ---------- FEEDBACK VIEW ---------- -->
+      <section class="view" id="view-feedback" data-view="feedback">
+        <div class="page-top">
+          <button class="back-btn" data-back="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <h2>Feedback</h2>
+        </div>
+        <p class="text-muted">Conte o que podemos melhorar no NOVVA IA.</p>
+        <div class="card mt-14">
+          <textarea id="feedback-text" rows="5" placeholder="Escreva aqui sua sugestão..." style="width:100%; background:transparent; border:none; color:#fff; font-size:14px; resize:vertical; outline:none;"></textarea>
+        </div>
+        <button class="btn btn-primary btn-block mt-14" id="btn-send-feedback">Enviar feedback</button>
+        <div style="height:20px;"></div>
+      </section>
+
+      <!-- ---------- PRIVACY VIEW ---------- -->
+      <section class="view" id="view-privacy" data-view="privacy">
+        <div class="page-top">
+          <button class="back-btn" data-back="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <h2>Política de Privacidade</h2>
+        </div>
+        <div class="prose">
+          <p>Esta Política de Privacidade descreve como o NOVVA IA ("nós") coleta, usa e protege as informações dos usuários.</p>
+          <h3>1. Dados coletados</h3>
+          <p>Podemos coletar informações fornecidas diretamente pelo usuário, como arquivos enviados para processamento, e dados técnicos do dispositivo necessários para o funcionamento do aplicativo.</p>
+          <h3>2. Arquivos enviados</h3>
+          <p>Imagens e vídeos selecionados pelo usuário são processados localmente sempre que possível. Quando o processamento exigir um serviço externo, isso será indicado claramente na interface.</p>
+          <h3>3. Processamento</h3>
+          <p>O processamento de imagens e vídeos pode ocorrer no dispositivo do usuário (via Canvas/JavaScript) ou, quando aplicável, por meio de um backend integrado no futuro.</p>
+          <h3>4. Armazenamento</h3>
+          <p>O histórico de projetos é salvo localmente no dispositivo do usuário (IndexedDB/localStorage) e não é transmitido a servidores, salvo indicação explícita em atualizações futuras.</p>
+          <h3>5. Serviços de terceiros</h3>
+          <p>Bibliotecas de terceiros carregadas via CDN podem ser utilizadas para funcionalidades específicas de exportação, sujeitas às respectivas políticas de privacidade.</p>
+          <h3>6. Cookies</h3>
+          <p>O NOVVA IA não utiliza cookies de rastreamento. Dados de preferências (como qualidade e formato padrão) são salvos localmente no dispositivo do usuário para melhorar a experiência de uso.</p>
+          <h3>7. Analytics</h3>
+          <p>Atualmente o aplicativo não utiliza ferramentas de analytics ou rastreamento de terceiros.</p>
+          <h3>8. Exclusão de dados</h3>
+          <p>O usuário pode excluir seus dados locais a qualquer momento pela seção Ajustes &gt; Limpar histórico.</p>
+          <h3>9. Segurança</h3>
+          <p>Adotamos medidas técnicas razoáveis para proteger as informações processadas pelo aplicativo.</p>
+          <h3>10. Contato</h3>
+          <p>Responsável: TAKKA<br>E-mail: suportetakka@gmail.com</p>
+          <p>Última atualização: 26/08/2026</p>
+        </div>
+        <div style="height:20px;"></div>
+      </section>
+
+      <!-- ---------- TERMS VIEW ---------- -->
+      <section class="view" id="view-terms" data-view="terms">
+        <div class="page-top">
+          <button class="back-btn" data-back="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <h2>Termos e Condições</h2>
+        </div>
+        <div class="prose">
+          <h3>1. Uso do serviço</h3>
+          <p>Ao utilizar o NOVVA IA, o usuário concorda com estes Termos e Condições.</p>
+          <h3>2. Responsabilidade do usuário</h3>
+          <p>O usuário é responsável pelos arquivos enviados e por garantir que possui os direitos necessários sobre eles.</p>
+          <h3>3. Arquivos enviados</h3>
+          <p>Os arquivos processados permanecem, sempre que tecnicamente possível, sob controle do usuário e do seu dispositivo.</p>
+          <h3>4. Conteúdo proibido</h3>
+          <p>É proibido utilizar o NOVVA IA para processar conteúdo ilegal, que viole direitos de terceiros ou que infrinja leis aplicáveis.</p>
+          <h3>5. Uso de inteligência artificial</h3>
+          <p>Funcionalidades identificadas como "IA" podem depender de integrações futuras com modelos externos, sujeitas a disponibilidade.</p>
+          <h3>6. Limitações</h3>
+          <p>O NOVVA IA é um aplicativo de edição e aprimoramento de imagens e vídeos. Não garantimos resultados específicos de qualidade, pois estes dependem do arquivo original enviado pelo usuário. O serviço não deve ser utilizado como única ferramenta em contextos que exijam precisão profissional crítica, como diagnósticos médicos ou perícias.</p>
+          <h3>7. Disponibilidade</h3>
+          <p>O serviço é fornecido "como está", podendo sofrer interrupções ou alterações sem aviso prévio.</p>
+          <h3>8. Propriedade intelectual</h3>
+          <p>A marca NOVVA IA, o layout, o código-fonte e os elementos visuais do aplicativo pertencem aos seus desenvolvedores. Os arquivos enviados e gerados pelo usuário permanecem de propriedade do próprio usuário.</p>
+          <h3>9. Alterações</h3>
+          <p>Estes termos podem ser atualizados periodicamente. Última atualização: 26/08/2026.</p>
+          <h3>10. Contato</h3>
+          <p>E-mail: suportetakka@gmail.com</p>
+        </div>
+        <div style="height:20px;"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <nav class="bottom-nav" aria-label="Navegação principal">
+    <button class="nav-item active" data-nav="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg>
+      Início
+    </button>
+    <button class="nav-item create-item" data-nav="create">
+      <span class="nav-fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+      Criar
+    </button>
+    <button class="nav-item" data-nav="projects">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h5l2 3h11v9a2 2 0 01-2 2H3z"/></svg>
+      Projetos
+    </button>
+    <button class="nav-item" data-nav="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1 1.55V21a2 2 0 01-4 0v-.09A1.7 1.7 0 009 19.4a1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.7 1.7 0 004.6 15a1.7 1.7 0 00-1.55-1H3a2 2 0 010-4h.09A1.7 1.7 0 004.6 9a1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06A1.7 1.7 0 009 4.6a1.7 1.7 0 001-1.55V3a2 2 0 014 0v.09a1.7 1.7 0 001 1.55 1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06A1.7 1.7 0 0019.4 9a1.7 1.7 0 001.55 1H21a2 2 0 010 4h-.09a1.7 1.7 0 00-1.51 1z"/></svg>
+      Ajustes
+    </button>
+  </nav>
+
+  <!-- ============ HAMBURGER PANEL ============ -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="side-panel" id="side-panel" aria-label="Menu">
+    <div class="side-panel-head">
+      <div class="brand"><span class="dot"></span>NOVVA <span style="color:var(--accent); font-weight:600;">IA</span></div>
+      <button class="icon-btn" id="btn-close-panel" aria-label="Fechar menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+      </button>
+    </div>
+    <div class="side-panel-body">
+      <button class="menu-item" data-nav="about"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Sobre NOVVA IA</button>
+      <button class="menu-item" data-nav="how"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 015.8 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Como funciona</button>
+      <button class="menu-item" data-nav="projects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h5l2 3h11v9a2 2 0 01-2 2H3z"/></svg>Histórico</button>
+      <button class="menu-item" data-nav="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/></svg>Configurações</button>
+      <div class="menu-divider"></div>
+      <button class="menu-item" data-nav="privacy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 3v6c0 5-3.4 8.7-8 11-4.6-2.3-8-6-8-11V5z"/></svg>Política de Privacidade</button>
+      <button class="menu-item" data-nav="terms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>Termos e Condições</button>
+      <div class="menu-divider"></div>
+      <button class="menu-item" data-nav="help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 015.8 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Ajuda</button>
+      <button class="menu-item" data-nav="feedback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 01-9.3 8.4A8.5 8.5 0 013 11.5 8.4 8.4 0 0111.6 3a8.3 8.3 0 019.4 8.5z"/></svg>Feedback</button>
+      <div class="menu-version">NOVVA IA — Versão 1.1.0</div>
+    </div>
+  </aside>
+
+  <!-- ============ TOASTS ============ -->
+  <div id="toast-stack" aria-live="polite"></div>
+
+  <!-- ============ PROCESSING MODAL ============ -->
+  <div class="modal-backdrop" id="processing-modal">
+    <div class="proc-modal">
+      <div class="proc-ring">
+        <svg viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke="#232326" stroke-width="4"/><circle cx="25" cy="25" r="20" fill="none" stroke="#FF1133" stroke-width="4" stroke-linecap="round" stroke-dasharray="90 126"/></svg>
+      </div>
+      <h3>Processando...</h3>
+      <p class="sub">A NOVVA IA está preparando seu arquivo.</p>
+      <div class="proc-step" id="proc-step-label">Preparando arquivo</div>
+      <div class="proc-bar"><div class="fill"></div></div>
+    </div>
+  </div>
+
+  <!-- ============ RESULT MODAL ============ -->
+  <div class="modal-backdrop" id="result-modal">
+    <div class="proc-modal">
+      <div class="result-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <h3>Arquivo pronto!</h3>
+      <p class="sub" id="result-sub">Seu arquivo foi exportado com sucesso.</p>
+      <div class="result-actions">
+        <button class="btn btn-primary btn-block" id="btn-result-download">Baixar</button>
+        <button class="btn btn-secondary btn-block" id="btn-result-share">Compartilhar</button>
+        <button class="btn btn-ghost btn-block" id="btn-result-edit-again">Editar novamente</button>
+        <button class="btn btn-ghost btn-block" id="btn-result-home">Voltar ao início</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ CONFIRM MODAL (generic) ============ -->
+  <div class="modal-backdrop" id="confirm-modal">
+    <div class="proc-modal">
+      <h3 id="confirm-title">Tem certeza?</h3>
+      <p class="sub" id="confirm-sub">Esta ação não pode ser desfeita.</p>
+      <div class="result-actions">
+        <button class="btn btn-primary btn-block" id="confirm-yes" style="background:#ff3b3b;">Confirmar</button>
+        <button class="btn btn-ghost btn-block" id="confirm-no">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ EXPORT SHEET ============ -->
+  <div class="sheet-backdrop" id="export-sheet-backdrop"></div>
+  <div class="sheet" id="export-sheet">
+    <div class="sheet-handle"></div>
+    <h3>Exportar</h3>
+    <div class="fmt-grid" id="export-fmt-grid"></div>
+    <div class="quality-row" id="export-quality-row">
+      <button class="opt-btn" data-quality="0.6">Boa</button>
+      <button class="opt-btn active" data-quality="0.8">Alta</button>
+      <button class="opt-btn" data-quality="1">Máxima</button>
+    </div>
+    <div class="export-summary">
+      <div class="row"><span>Resolução</span><span id="exp-resolution">—</span></div>
+      <div class="row"><span>Formato</span><span id="exp-format">PNG</span></div>
+      <div class="row"><span>Qualidade</span><span id="exp-quality">Alta</span></div>
+    </div>
+    <button class="btn btn-primary btn-block mt-20" id="btn-do-export">Exportar</button>
+  </div>
+
+</div>
+
+<!-- Hidden inputs -->
+<input type="file" id="file-input-single" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" class="visually-hidden" aria-hidden="true">
+<input type="file" id="file-input-multi" accept="image/jpeg,image/png,image/webp" multiple class="visually-hidden" aria-hidden="true">
+
+<!-- ============ CDN LIBRARIES (export features) ============ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+
+<script>
+(function(){
+"use strict";
+
+/* =====================================================================
+   NOVVA IA — APPLICATION LOGIC
+   Organizado em módulos internos: State, Utils, Toast, Nav, DB,
+   FileSelect, ImageEditor, Adjustments, Upscale, Compare, Collage,
+   VideoEditor, Processing, Export, History, Settings, Modals.
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   STATE
+   --------------------------------------------------------------------- */
+const State = {
+  currentView: 'home',
+  currentKindHint: null,      // 'image' | 'video' | 'collage'
+  image: {
+    file:null, srcImage:null, naturalW:0, naturalH:0,
+    adjust:{brightness:0, contrast:0, saturation:0, exposure:0, sharpness:0},
+    upscaleFactor:1,
+    activeTool:'adjust',
+    compareOn:false,
+    historyId:null
+  },
+  video: {
+    file:null, url:null, duration:0, width:0, height:0,
+    adjust:{brightness:0, contrast:0, saturation:0, exposure:0, sharpness:0},
+    upscaleFactor:1,
+    historyId:null
+  },
+  collage: {
+    images:[],           // {img, name}
+    layout:'grid2x2',
+    ratio:'1:1',
+    gap:8, radius:0, bg:'black',
+    historyId:null
+  },
+  settings: {
+    quality:0.8, format:'png', confirmDelete:true
+  },
+  exportCtx: null,        // {type:'image'|'video'|'collage', format, quality}
+  pendingAction: null
+};
+
+/* ---------------------------------------------------------------------
+   UTILS
+   --------------------------------------------------------------------- */
+const $ = (sel, root) => (root||document).querySelector(sel);
+const $$ = (sel, root) => Array.from((root||document).querySelectorAll(sel));
+const clamp = (v,min,max) => Math.min(max, Math.max(min, v));
+const uid = () => 'nv_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
+
+function formatBytes(bytes){
+  if(!bytes) return '0 KB';
+  const units=['B','KB','MB','GB'];
+  let i=0, v=bytes;
+  while(v>=1024 && i<units.length-1){v/=1024; i++;}
+  return v.toFixed(v<10 && i>0 ? 1:0) + ' ' + units[i];
+}
+function formatDate(ts){
+  const d = new Date(ts);
+  return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'short'});
+}
+function formatDuration(sec){
+  sec = Math.round(sec);
+  const m = Math.floor(sec/60), s = sec%60;
+  return m+':'+String(s).padStart(2,'0');
+}
+function debounce(fn, ms){
+  let t;
+  return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); };
+}
+
+/* ---------------------------------------------------------------------
+   TOAST
+   --------------------------------------------------------------------- */
+const Toast = {
+  show(message, type){
+    const stack = $('#toast-stack');
+    const el = document.createElement('div');
+    el.className = 'toast' + (type ? ' '+type : '');
+    el.innerHTML = '<span class="dot"></span><span></span>';
+    el.querySelector('span:last-child').textContent = message;
+    stack.appendChild(el);
+    requestAnimationFrame(()=> el.classList.add('show'));
+    setTimeout(()=>{
+      el.classList.remove('show');
+      setTimeout(()=> el.remove(), 300);
+    }, 2600);
+  }
+};
+
+/* ---------------------------------------------------------------------
+   NAVIGATION
+   --------------------------------------------------------------------- */
+const Nav = {
+  init(){
+    $$('.nav-item').forEach(btn=>{
+      btn.addEventListener('click', ()=> this.go(btn.dataset.nav));
+    });
+    $$('[data-nav]').forEach(el=>{
+      if(el.classList.contains('nav-item')) return;
+      el.addEventListener('click', ()=>{
+        this.go(el.dataset.nav);
+        SidePanel.close();
+      });
+    });
+    $$('[data-back]').forEach(el=>{
+      el.addEventListener('click', ()=> this.go(el.dataset.back));
+    });
+    $('#btn-empty-create').addEventListener('click', ()=> this.go('create'));
+  },
+  go(name){
+    const map = {
+      home:'view-home', create:'view-create', projects:'view-projects',
+      settings:'view-settings', about:'view-about', how:'view-how',
+      help:'view-help', feedback:'view-feedback', privacy:'view-privacy',
+      terms:'view-terms', 'image-editor':'view-image-editor',
+      'video-editor':'view-video-editor', collage:'view-collage'
+    };
+    const id = map[name];
+    if(!id) return;
+    const leavingView = State.currentView;
+    if(leavingView !== name){
+      if(leavingView === 'image-editor') ImageEditor.saveSnapshotToHistory();
+      else if(leavingView === 'video-editor') VideoEditor.saveSnapshotToHistory();
+      else if(leavingView === 'collage') Collage.saveSnapshotToHistory();
+    }
+    $$('.view').forEach(v=> v.classList.remove('active'));
+    $('#'+id).classList.add('active');
+    State.currentView = name;
+    $$('.nav-item').forEach(b=> b.classList.toggle('active', b.dataset.nav===name));
+    window.scrollTo({top:0, behavior:'instant' in window ? 'instant':'auto'});
+    if(name==='projects') History.render();
+    if(name==='home') History.renderRecent();
+  }
+};
+
+/* ---------------------------------------------------------------------
+   SIDE PANEL (hamburger)
+   --------------------------------------------------------------------- */
+const SidePanel = {
+  init(){
+    $('#btn-hamburger').addEventListener('click', ()=> this.open());
+    $('#btn-close-panel').addEventListener('click', ()=> this.close());
+    $('#overlay').addEventListener('click', ()=> this.close());
+  },
+  open(){
+    $('#side-panel').classList.add('show');
+    $('#overlay').classList.add('show');
+  },
+  close(){
+    $('#side-panel').classList.remove('show');
+    $('#overlay').classList.remove('show');
+  }
+};
+
+/* ---------------------------------------------------------------------
+   MODALS (processing / result / confirm)
+   --------------------------------------------------------------------- */
+const Modal = {
+  show(id){ $('#'+id).classList.add('show'); },
+  hide(id){ $('#'+id).classList.remove('show'); },
+  confirm(title, sub){
+    return new Promise(resolve=>{
+      $('#confirm-title').textContent = title;
+      $('#confirm-sub').textContent = sub;
+      this.show('confirm-modal');
+      const yes = $('#confirm-yes'), no = $('#confirm-no');
+      const cleanup = ()=>{
+        yes.removeEventListener('click', onYes);
+        no.removeEventListener('click', onNo);
+        this.hide('confirm-modal');
+      };
+      const onYes = ()=>{ cleanup(); resolve(true); };
+      const onNo = ()=>{ cleanup(); resolve(false); };
+      yes.addEventListener('click', onYes);
+      no.addEventListener('click', onNo);
+    });
+  }
+};
+
+/* ---------------------------------------------------------------------
+   PROCESSING FLOW — no fake percentages, real steps only
+   --------------------------------------------------------------------- */
+const Processing = {
+  async run(steps, work){
+    // steps: array of label strings describing real stages
+    // work: async function(setStep) that performs the actual task
+    Modal.show('processing-modal');
+    let i = 0;
+    const setStep = (label)=>{ $('#proc-step-label').textContent = label; };
+    if(steps && steps.length) setStep(steps[0]);
+    try{
+      const result = await work(setStep, steps);
+      Modal.hide('processing-modal');
+      return result;
+    }catch(err){
+      Modal.hide('processing-modal');
+      console.error(err);
+      Toast.show('Não foi possível processar este arquivo. Tente novamente.', 'error');
+      throw err;
+    }
+  }
+};
+
+/* ---------------------------------------------------------------------
+   INDEXEDDB — History / Projects storage
+   --------------------------------------------------------------------- */
+const DB = {
+  _db:null,
+  open(){
+    if(this._db) return Promise.resolve(this._db);
+    return new Promise((resolve, reject)=>{
+      const req = indexedDB.open('novva-ia-db', 1);
+      req.onupgradeneeded = (e)=>{
+        const db = e.target.result;
+        if(!db.objectStoreNames.contains('projects')){
+          db.createObjectStore('projects', {keyPath:'id'});
+        }
+      };
+      req.onsuccess = ()=>{ this._db = req.result; resolve(this._db); };
+      req.onerror = ()=> reject(req.error);
+    });
+  },
+  async add(project){
+    const db = await this.open();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction('projects','readwrite');
+      tx.objectStore('projects').put(project);
+      tx.oncomplete = ()=> resolve();
+      tx.onerror = ()=> reject(tx.error);
+    });
+  },
+  async all(){
+    const db = await this.open();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction('projects','readonly');
+      const req = tx.objectStore('projects').getAll();
+      req.onsuccess = ()=> resolve(req.result.sort((a,b)=> b.createdAt - a.createdAt));
+      req.onerror = ()=> reject(req.error);
+    });
+  },
+  async remove(id){
+    const db = await this.open();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction('projects','readwrite');
+      tx.objectStore('projects').delete(id);
+      tx.oncomplete = ()=> resolve();
+      tx.onerror = ()=> reject(tx.error);
+    });
+  },
+  async clear(){
+    const db = await this.open();
+    return new Promise((resolve, reject)=>{
+      const tx = db.transaction('projects','readwrite');
+      tx.objectStore('projects').clear();
+      tx.oncomplete = ()=> resolve();
+      tx.onerror = ()=> reject(tx.error);
+    });
+  }
+};
+
+/* ---------------------------------------------------------------------
+   HISTORY / PROJECTS UI
+   --------------------------------------------------------------------- */
+const History = {
+  async add({name, type, resolution, thumbBlob}){
+    const thumbUrl = URL.createObjectURL(thumbBlob);
+    const project = { id:uid(), name, type, resolution, thumbBlob, createdAt:Date.now() };
+    await DB.add(project);
+    URL.revokeObjectURL(thumbUrl);
+    this.render();
+    this.renderRecent();
+  },
+  // Creates a project on first save, or silently updates the same entry on
+  // subsequent saves (e.g. when leaving a project mid-edit) instead of
+  // creating duplicates. Returns the project id to keep tracking it.
+  async upsert(id, {name, type, resolution, thumbBlob}){
+    let createdAt = Date.now();
+    if(id){
+      try{
+        const db = await DB.open();
+        const existing = await new Promise((resolve, reject)=>{
+          const tx = db.transaction('projects','readonly');
+          const req = tx.objectStore('projects').get(id);
+          req.onsuccess = ()=> resolve(req.result);
+          req.onerror = ()=> reject(req.error);
+        });
+        if(existing) createdAt = existing.createdAt;
+      }catch(e){ /* fall back to a fresh entry */ }
+    }
+    const project = { id: id || uid(), name, type, resolution, thumbBlob, createdAt };
+    await DB.add(project);
+    this.render();
+    this.renderRecent();
+    return project.id;
+  },
+  async render(){
+    const list = $('#projects-list');
+    const empty = $('#projects-empty');
+    const items = await DB.all();
+    list.innerHTML = '';
+    if(!items.length){
+      empty.classList.remove('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+    items.forEach(p=> list.appendChild(this.buildItem(p)));
+  },
+  async renderRecent(){
+    const label = $('#home-recent-label');
+    const list = $('#home-recent-list');
+    const items = (await DB.all()).slice(0,3);
+    list.innerHTML = '';
+    if(!items.length){ label.style.display='none'; return; }
+    label.style.display='block';
+    items.forEach(p=> list.appendChild(this.buildItem(p, true)));
+  },
+  buildItem(p, compact){
+    const el = document.createElement('div');
+    el.className = 'project-item';
+    const url = URL.createObjectURL(p.thumbBlob);
+    el.innerHTML = `
+      <div class="project-thumb"><img src="${url}" alt="${p.name}" loading="lazy"></div>
+      <div class="project-info">
+        <h4>${p.name}</h4>
+        <p>${p.type === 'image' ? 'Imagem' : p.type==='video' ? 'Vídeo' : 'Colagem'} · ${p.resolution} · ${formatDate(p.createdAt)}</p>
+      </div>
+      <button class="project-menu-btn" aria-label="Opções">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="6" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="18" r="1.2"/></svg>
+      </button>`;
+    el.querySelector('.project-menu-btn').addEventListener('click', async (ev)=>{
+      ev.stopPropagation();
+      const doDelete = State.settings.confirmDelete
+        ? await Modal.confirm('Excluir projeto?', 'Esta ação não pode ser desfeita.')
+        : true;
+      if(doDelete){
+        await DB.remove(p.id);
+        Toast.show('Projeto excluído.');
+        this.render();
+        this.renderRecent();
+      }
+    });
+    el.addEventListener('click', ()=>{
+      Toast.show('Abrindo pré-visualização do projeto.');
+    });
+    return el;
+  }
+};
+
+/* ---------------------------------------------------------------------
+   CANVAS PIXEL PROCESSING — adjustments engine
+   --------------------------------------------------------------------- */
+const Pixels = {
+  // Applies brightness/contrast/saturation/exposure/sharpness onto ImageData
+  apply(srcCanvas, adj){
+    const w = srcCanvas.width, h = srcCanvas.height;
+    const out = document.createElement('canvas');
+    out.width = w; out.height = h;
+    const octx = out.getContext('2d');
+    octx.drawImage(srcCanvas, 0, 0);
+
+    const brightness = adj.brightness || 0;   // -100..100
+    const contrast = adj.contrast || 0;        // -100..100
+    const saturation = adj.saturation || 0;    // -100..100
+    const exposure = adj.exposure || 0;        // -100..100
+    const sharpness = adj.sharpness || 0;      // 0..100
+
+    const needsPixelPass = brightness||contrast||saturation||exposure;
+    if(needsPixelPass){
+      const imgData = octx.getImageData(0,0,w,h);
+      const d = imgData.data;
+      const cF = (259*(contrast+255))/(255*(259-contrast)); // contrast factor
+      const bAdd = (brightness/100)*80;
+      const eAdd = (exposure/100)*90;
+      const satF = 1 + (saturation/100);
+      for(let i=0;i<d.length;i+=4){
+        let r=d[i], g=d[i+1], b=d[i+2];
+        // exposure + brightness (linear add)
+        r += bAdd + eAdd; g += bAdd + eAdd; b += bAdd + eAdd;
+        // contrast
+        r = cF*(r-128)+128; g = cF*(g-128)+128; b = cF*(b-128)+128;
+        // saturation
+        const gray = 0.2989*r + 0.587*g + 0.114*b;
+        r = gray + (r-gray)*satF;
+        g = gray + (g-gray)*satF;
+        b = gray + (b-gray)*satF;
+        d[i]=clamp(r,0,255); d[i+1]=clamp(g,0,255); d[i+2]=clamp(b,0,255);
+      }
+      octx.putImageData(imgData,0,0);
+    }
+    if(sharpness > 0){
+      this.sharpen(octx, w, h, sharpness/100);
+    }
+    return out;
+  },
+  sharpen(ctx, w, h, amount){
+    // simple unsharp-mask style convolution kernel
+    const src = ctx.getImageData(0,0,w,h);
+    const d = src.data;
+    const copy = new Uint8ClampedArray(d);
+    const k = [0,-1,0, -1,5,-1, 0,-1,0];
+    const mix = amount; // 0..1 blend between original and sharpened
+    for(let y=1;y<h-1;y++){
+      for(let x=1;x<w-1;x++){
+        for(let c=0;c<3;c++){
+          let sum=0, idx=0;
+          for(let ky=-1;ky<=1;ky++){
+            for(let kx=-1;kx<=1;kx++){
+              const px=((y+ky)*w+(x+kx))*4+c;
+              sum += copy[px]*k[idx++];
+            }
+          }
+          const pos=(y*w+x)*4+c;
+          d[pos] = clamp(copy[pos]*(1-mix) + sum*mix, 0, 255);
+        }
+      }
+    }
+    ctx.putImageData(src,0,0);
+  }
+};
+
+/* ---------------------------------------------------------------------
+   UPSCALE — local Canvas high-quality resize (step-down/up sampling)
+   --------------------------------------------------------------------- */
+const Upscale = {
+  targetDims(naturalW, naturalH, factor){
+    if(factor === 1) return {w:naturalW, h:naturalH};
+    let maxLong;
+    if(factor === 2) maxLong = 2560;
+    else if(factor === 4) maxLong = 3840;
+    else maxLong = naturalW;
+    const long = Math.max(naturalW, naturalH);
+    if(long >= maxLong) return {w:naturalW, h:naturalH}; // never downscale as "upscale"
+    const ratio = maxLong / long;
+    return { w: Math.round(naturalW*ratio), h: Math.round(naturalH*ratio) };
+  },
+  // High quality progressive upscale using multiple canvas steps
+  render(sourceCanvas, targetW, targetH){
+    let cur = sourceCanvas;
+    let curW = sourceCanvas.width, curH = sourceCanvas.height;
+    // progressive doubling for smoother interpolation
+    while(curW*1.6 < targetW){
+      const nw = Math.round(curW*1.6), nh = Math.round(curH*1.6);
+      const step = document.createElement('canvas');
+      step.width = nw; step.height = nh;
+      const sctx = step.getContext('2d');
+      sctx.imageSmoothingEnabled = true;
+      sctx.imageSmoothingQuality = 'high';
+      sctx.drawImage(cur, 0, 0, nw, nh);
+      cur = step; curW = nw; curH = nh;
+    }
+    const final = document.createElement('canvas');
+    final.width = targetW; final.height = targetH;
+    const fctx = final.getContext('2d');
+    fctx.imageSmoothingEnabled = true;
+    fctx.imageSmoothingQuality = 'high';
+    fctx.drawImage(cur, 0, 0, targetW, targetH);
+    return final;
+  }
+};
+
+/* ---------------------------------------------------------------------
+   IMAGE EDITOR
+   --------------------------------------------------------------------- */
+const ImageEditor = {
+  baseCanvas:null, // original image at working resolution
+  init(){
+    $$('#panel-adjust input[type=range]').forEach(inp=>{
+      inp.addEventListener('input', ()=> this.onAdjustInput(inp));
+    });
+    $('#btn-reset-adjust').addEventListener('click', ()=> this.resetAdjust());
+    $$('.tb-btn').forEach(btn=> btn.addEventListener('click', ()=> this.setTool(btn.dataset.tool)));
+    $$('#panel-upscale [data-upscale]').forEach(btn=>{
+      btn.addEventListener('click', ()=> this.setUpscale(btn));
+    });
+    $('#btn-image-compare-toggle').addEventListener('click', ()=> this.toggleCompare());
+    $('#btn-image-export').addEventListener('click', ()=> Export.openSheet('image'));
+    const divider = $('#compare-divider');
+    this.bindDivider(divider);
+  },
+  async load(file){
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    await new Promise((resolve, reject)=>{
+      img.onload = resolve; img.onerror = reject; img.src = url;
+    });
+    State.image.file = file;
+    State.image.srcImage = img;
+    State.image.naturalW = img.naturalWidth;
+    State.image.naturalH = img.naturalHeight;
+    State.image.adjust = {brightness:0, contrast:0, saturation:0, exposure:0, sharpness:0};
+    State.image.upscaleFactor = 1;
+    State.image.compareOn = false;
+    State.image.historyId = null;
+    ['cmp-before-canvas','cmp-after-canvas'].forEach(id=>{
+      const c = document.getElementById(id);
+      if(c){ c.width = 0; c.height = 0; }
+    });
+
+    // working canvas capped for performance (preview), export uses full res
+    const maxWork = 1400;
+    const scale = Math.min(1, maxWork / Math.max(img.naturalWidth, img.naturalHeight));
+    const cw = Math.round(img.naturalWidth*scale), ch = Math.round(img.naturalHeight*scale);
+    const base = document.createElement('canvas');
+    base.width = cw; base.height = ch;
+    base.getContext('2d').drawImage(img, 0, 0, cw, ch);
+    this.baseCanvas = base;
+
+    URL.revokeObjectURL(url);
+    $$('#panel-adjust input[type=range]').forEach(inp=>{ inp.value = 0; });
+    $$('#panel-adjust .val').forEach(v=> v.textContent='0');
+    $('#dim-original').textContent = img.naturalWidth+'×'+img.naturalHeight;
+    $$('#panel-upscale [data-upscale]').forEach(b=> b.classList.toggle('active', b.dataset.upscale==='1'));
+    this.setTool('adjust');
+    this.setCompareVisible(false);
+    this.render();
+    Nav.go('image-editor');
+  },
+  onAdjustInput(inp){
+    const key = inp.id.replace('s-','');
+    const val = Number(inp.value);
+    State.image.adjust[key] = val;
+    $('#v-'+key).textContent = val;
+    if(this._rafPending) return;
+    this._rafPending = true;
+    requestAnimationFrame(()=>{
+      this._rafPending = false;
+      this.render();
+    });
+  },
+  resetAdjust(){
+    State.image.adjust = {brightness:0, contrast:0, saturation:0, exposure:0, sharpness:0};
+    $$('#panel-adjust input[type=range]').forEach(inp=>{ inp.value = 0; });
+    $$('#panel-adjust .val').forEach(v=> v.textContent='0');
+    this.render();
+    Toast.show('Ajustes redefinidos.');
+  },
+  setTool(tool){
+    State.image.activeTool = tool;
+    $$('.tb-btn').forEach(b=> b.classList.toggle('active', b.dataset.tool===tool));
+    $('#panel-adjust').classList.toggle('hidden', tool!=='adjust');
+    $('#panel-upscale').classList.toggle('hidden', tool!=='upscale');
+    if(tool==='compare'){ this.setCompareVisible(true); this.renderCompare(); }
+    else { this.setCompareVisible(State.image.compareOn); }
+  },
+  setUpscale(btn){
+    $$('#panel-upscale [data-upscale]').forEach(b=> b.classList.remove('active'));
+    btn.classList.add('active');
+    State.image.upscaleFactor = Number(btn.dataset.upscale);
+    const badge = $('#upscale-badge');
+    if(State.image.upscaleFactor === 1){
+      badge.innerHTML = '<span class="dot"></span>Sem upscale — resolução original';
+      badge.classList.remove('ai');
+    } else {
+      badge.innerHTML = '<span class="dot"></span>Upscale local (Canvas) — proporção preservada';
+      badge.classList.remove('ai');
+    }
+    this.render();
+  },
+  render(){
+    const adjusted = Pixels.apply(this.baseCanvas, State.image.adjust);
+    const target = document.getElementById('img-preview-canvas');
+    target.width = adjusted.width; target.height = adjusted.height;
+    target.getContext('2d').drawImage(adjusted, 0, 0);
+    this._lastAdjusted = adjusted;
+    if(State.image.compareOn || State.image.activeTool==='compare'){
+      this.renderCompare();
+    }
+  },
+  toggleCompare(){
+    State.image.compareOn = !State.image.compareOn;
+    this.setCompareVisible(State.image.compareOn);
+    if(State.image.compareOn) this.renderCompare();
+  },
+  setCompareVisible(on){
+    $('#img-compare-box').classList.toggle('hidden', !on);
+    $('#img-preview-canvas').style.display = on ? 'none':'block';
+  },
+  renderCompare(){
+    const before = document.getElementById('cmp-before-canvas');
+    const after = document.getElementById('cmp-after-canvas');
+    before.width = this.baseCanvas.width; before.height = this.baseCanvas.height;
+    before.getContext('2d').drawImage(this.baseCanvas, 0, 0);
+    const adjusted = this._lastAdjusted || this.baseCanvas;
+    after.width = adjusted.width; after.height = adjusted.height;
+    after.getContext('2d').drawImage(adjusted, 0, 0);
+  },
+  bindDivider(divider){
+    const box = $('#img-compare-box');
+    let dragging = false;
+    const setPos = (clientX)=>{
+      const rect = box.getBoundingClientRect();
+      let pct = ((clientX - rect.left) / rect.width) * 100;
+      pct = clamp(pct, 0, 100);
+      divider.style.left = pct + '%';
+      $('.after-layer', box).style.clipPath = `inset(0 0 0 ${pct}%)`;
+    };
+    const start = (e)=>{ dragging = true; };
+    const move = (e)=>{
+      if(!dragging) return;
+      const x = e.touches ? e.touches[0].clientX : e.clientX;
+      setPos(x);
+    };
+    const end = ()=>{ dragging = false; };
+    divider.addEventListener('mousedown', start);
+    divider.addEventListener('touchstart', start, {passive:true});
+    window.addEventListener('mousemove', move);
+    window.addEventListener('touchmove', move, {passive:true});
+    window.addEventListener('mouseup', end);
+    window.addEventListener('touchend', end);
+  },
+  // Produces final full-resolution canvas (adjust + upscale) for export
+  async buildFinalCanvas(setStep){
+    setStep && setStep('Analisando');
+    // Build a full-resolution base from the original image (not the capped working canvas)
+    const full = document.createElement('canvas');
+    full.width = State.image.naturalW; full.height = State.image.naturalH;
+    full.getContext('2d').drawImage(State.image.srcImage, 0, 0);
+
+    setStep && setStep('Melhorando detalhes');
+    const adjusted = Pixels.apply(full, State.image.adjust);
+
+    setStep && setStep('Aumentando resolução');
+    const dims = Upscale.targetDims(State.image.naturalW, State.image.naturalH, State.image.upscaleFactor);
+    const finalCanvas = (dims.w === adjusted.width && dims.h === adjusted.height)
+      ? adjusted
+      : Upscale.render(adjusted, dims.w, dims.h);
+
+    setStep && setStep('Finalizando');
+    await new Promise(r=> setTimeout(r, 120));
+    return finalCanvas;
+  },
+  // Saves (or updates) a history entry for the current project when the
+  // user navigates away from the editor, so work isn't lost if they never export.
+  async saveSnapshotToHistory(){
+    if(!State.image.file) return;
+    const canvas = this._lastAdjusted || this.baseCanvas;
+    if(!canvas) return;
+    try{
+      const blob = await new Promise(res=> canvas.toBlob(res, 'image/png'));
+      if(!blob) return;
+      const thumbBlob = await Export.makeThumb(blob, 'image');
+      const dims = Upscale.targetDims(State.image.naturalW, State.image.naturalH, State.image.upscaleFactor);
+      State.image.historyId = await History.upsert(State.image.historyId, {
+        name: State.image.file.name || 'novva-ia-imagem.png',
+        type: 'image',
+        resolution: dims.w+'×'+dims.h,
+        thumbBlob
+      });
+    }catch(e){ console.error(e); }
+  }
+};
+
+/* ---------------------------------------------------------------------
+   COLLAGE EDITOR
+   --------------------------------------------------------------------- */
+// Gera as quantidades de células por linha para uma grade balanceada de n células
+// (ex.: n=5 -> [3,2] : uma linha com 3 e outra com 2, o mais "quadrado" possível)
+function splitCounts(n){
+  const rows = Math.max(1, Math.round(Math.sqrt(n)));
+  const base = Math.floor(n/rows), extra = n % rows;
+  const counts = [];
+  for(let i=0;i<rows;i++) counts.push(base + (i<extra ? 1:0));
+  return counts;
+}
+// Converte quantidades-por-linha em retângulos normalizados (0..1). transpose=true gira o
+// resultado em 90° (linhas viram colunas), gerando a variação "empilhada" do mesmo arranjo.
+function gridCellsFromRowCounts(rowCounts, transpose){
+  const rows = rowCounts.length;
+  const cells = [];
+  rowCounts.forEach((count, r)=>{
+    const y = r/rows, h = 1/rows;
+    for(let c=0;c<count;c++){
+      const x = c/count, w = 1/count;
+      cells.push(transpose ? {x:y, y:x, w:h, h:w} : {x, y, w, h});
+    }
+  });
+  return cells;
+}
+// Uma célula grande à esquerda + as demais empilhadas à direita
+function featureLeftCells(n){
+  const cells = [{x:0,y:0,w:0.5,h:1}];
+  const rest = n-1;
+  for(let i=0;i<rest;i++) cells.push({x:0.5, y:i/rest, w:0.5, h:1/rest});
+  return cells;
+}
+// Uma célula grande no topo + as demais lado a lado embaixo
+function featureTopCells(n){
+  const cells = [{x:0,y:0,w:1,h:0.5}];
+  const rest = n-1;
+  for(let i=0;i<rest;i++) cells.push({x:i/rest, y:0.5, w:1/rest, h:0.5});
+  return cells;
+}
+// Retorna só as opções de layout que fazem sentido para a quantidade exata de imagens (n).
+function getLayoutsForCount(n){
+  if(n<=1) return [{id:'single', label:'Único', cells:[{x:0,y:0,w:1,h:1}]}];
+  const rowCounts = splitCounts(n);
+  const candidates = [
+    {id:`row-${n}`,     label:'Linha',   cells: gridCellsFromRowCounts([n], false)},
+    {id:`col-${n}`,     label:'Coluna',  cells: gridCellsFromRowCounts([n], true)},
+    {id:`grid-${n}`,    label:'Grade',   cells: gridCellsFromRowCounts(rowCounts, false)},
+    {id:`gridalt-${n}`, label:'Grade invertida', cells: gridCellsFromRowCounts(rowCounts, true)},
+  ];
+  if(n>=3){
+    candidates.push({id:`featl-${n}`, label:'Destaque à esquerda', cells: featureLeftCells(n)});
+    candidates.push({id:`featt-${n}`, label:'Destaque no topo', cells: featureTopCells(n)});
+  }
+  // remove duplicados (mesma geometria) mantendo a ordem
+  const seen = new Set();
+  const out = [];
+  candidates.forEach(l=>{
+    const sig = l.cells.map(c=> [c.x,c.y,c.w,c.h].map(v=> Math.round(v*1000)).join(',')).join('|');
+    if(seen.has(sig)) return;
+    seen.add(sig);
+    out.push(l);
+  });
+  return out;
+}
+
+const Collage = {
+  init(){
+    $('#btn-collage-add').addEventListener('click', ()=> $('#file-input-multi').click());
+    this.buildLayoutOptions();
+    this.buildRatioOptions();
+    this.initCanvasDrag();
+    $('#s-gap').addEventListener('input', (e)=>{
+      State.collage.gap = Number(e.target.value); $('#v-gap').textContent = e.target.value; this.render();
+    });
+    $('#s-radius').addEventListener('input', (e)=>{
+      State.collage.radius = Number(e.target.value); $('#v-radius').textContent = e.target.value; this.render();
+    });
+    $$('[data-collage-bg]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        $$('[data-collage-bg]').forEach(b=> b.classList.remove('active'));
+        btn.classList.add('active');
+        State.collage.bg = btn.dataset.collageBg;
+        this.render();
+      });
+    });
+    $('#btn-collage-export').addEventListener('click', ()=> Export.openSheet('collage'));
+  },
+  buildLayoutOptions(){
+    const wrap = $('#layout-scroll');
+    wrap.innerHTML = '';
+    const n = State.collage.images.length || 1;
+    const layouts = getLayoutsForCount(n);
+    // se o layout salvo não existe mais para essa quantidade (ex.: usuário removeu uma imagem), usa o primeiro disponível
+    if(!layouts.find(l=> l.id===State.collage.layout)){
+      State.collage.layout = layouts[0].id;
+    }
+    layouts.forEach(l=>{
+      const btn = document.createElement('button');
+      btn.className = 'layout-opt' + (l.id===State.collage.layout ? ' active':'');
+      btn.title = l.label;
+      const preview = document.createElement('div');
+      preview.className = 'layout-preview';
+      const gap = 0.05;
+      l.cells.forEach(cell=>{
+        const cd = document.createElement('div');
+        cd.style.left = ((cell.x+gap/2)*100)+'%';
+        cd.style.top = ((cell.y+gap/2)*100)+'%';
+        cd.style.width = ((cell.w-gap)*100)+'%';
+        cd.style.height = ((cell.h-gap)*100)+'%';
+        preview.appendChild(cd);
+      });
+      btn.appendChild(preview);
+      btn.addEventListener('click', ()=>{
+        State.collage.layout = l.id;
+        $$('.layout-opt', wrap).forEach(b=> b.classList.remove('active'));
+        btn.classList.add('active');
+        this.render();
+      });
+      wrap.appendChild(btn);
+    });
+  },
+  buildRatioOptions(){
+    const ratios = ['1:1','4:5','9:16','16:9','3:4','4:3','2:3','3:2'];
+    const wrap = $('#ratio-grid');
+    wrap.innerHTML = '';
+    ratios.forEach(r=>{
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn' + (r===State.collage.ratio ? ' active':'');
+      btn.textContent = r;
+      btn.addEventListener('click', ()=>{
+        State.collage.ratio = r;
+        $$('.opt-btn', wrap).forEach(b=> b.classList.remove('active'));
+        btn.classList.add('active');
+        this.render();
+      });
+      wrap.appendChild(btn);
+    });
+  },
+  MAX_IMAGES:9,
+  _uidSeq:0,
+  async addFiles(fileList){
+    const remaining = this.MAX_IMAGES - State.collage.images.length;
+    if(remaining <= 0){
+      Toast.show('Limite de 9 imagens atingido.', 'error');
+      return;
+    }
+    const isImageFile = (f)=>{
+      if(f.type && f.type.startsWith('image/')) return true;
+      if(!f.type) return /\.(jpe?g|png|webp|heic|heif|gif|bmp)$/i.test(f.name || '');
+      return false;
+    };
+    const files = Array.from(fileList).filter(isImageFile).slice(0, remaining);
+    if(!files.length){
+      Toast.show('Nenhuma imagem válida selecionada.', 'error');
+      return;
+    }
+    let failedCount = 0;
+    for(const f of files){
+      const url = URL.createObjectURL(f);
+      const img = new Image();
+      const loaded = new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; });
+      img.src = url;
+      try{
+        if(img.decode){
+          try{ await img.decode(); }
+          catch(e){ await loaded; }
+        } else {
+          await loaded;
+        }
+        State.collage.images.push({img, name:f.name, url, uid: ++this._uidSeq, offX:0, offY:0});
+      }catch(err){
+        failedCount++;
+        URL.revokeObjectURL(url);
+      }
+    }
+    this.renderThumbs();
+    this.render();
+    const addedCount = files.length - failedCount;
+    if(addedCount > 0){
+      Toast.show(addedCount>1 ? 'Imagens adicionadas.' : 'Imagem adicionada.', 'success');
+    }
+    if(failedCount > 0){
+      Toast.show(failedCount>1 ? `${failedCount} imagens não puderam ser carregadas.` : '1 imagem não pôde ser carregada.', 'error');
+    }
+  },
+  renderThumbs(){
+    const wrap = $('#collage-thumbs');
+    wrap.querySelectorAll('.collage-thumb').forEach(t=> t.remove());
+    State.collage.images.forEach((item)=>{
+      const t = document.createElement('div');
+      t.className = 'collage-thumb';
+      t.dataset.uid = item.uid;
+      t.innerHTML = `<img src="${item.url}" alt=""><button class="rm" aria-label="Remover">×</button>`;
+      t.querySelector('.rm').addEventListener('click', (ev)=>{
+        ev.stopPropagation();
+        const idx = State.collage.images.findIndex(i=> i.uid===item.uid);
+        if(idx>-1) State.collage.images.splice(idx,1);
+        this.renderThumbs();
+        this.render();
+      });
+      t.addEventListener('pointerdown', (ev)=> this.startThumbDrag(ev, item.uid, t));
+      wrap.insertBefore(t, $('#btn-collage-add'));
+    });
+    $('#btn-collage-add').classList.toggle('hidden', State.collage.images.length >= this.MAX_IMAGES);
+    this.buildLayoutOptions();
+  },
+  // Reordena as imagens arrastando a miniatura sobre as outras (funciona com toque e mouse)
+  startThumbDrag(ev, uid, el){
+    if(ev.target.closest('.rm')) return;
+    const wrap = $('#collage-thumbs');
+    el.setPointerCapture(ev.pointerId);
+    let moved = false;
+    const onMove = (mv)=>{
+      if(!moved){ moved = true; el.classList.add('dragging'); }
+      const under = document.elementFromPoint(mv.clientX, mv.clientY);
+      const targetThumb = under && under.closest ? under.closest('.collage-thumb') : null;
+      if(targetThumb && targetThumb!==el && wrap.contains(targetThumb)){
+        const fromIdx = State.collage.images.findIndex(i=> String(i.uid)===String(uid));
+        const toIdx = State.collage.images.findIndex(i=> String(i.uid)===targetThumb.dataset.uid);
+        if(fromIdx>-1 && toIdx>-1 && fromIdx!==toIdx){
+          const [moved_] = State.collage.images.splice(fromIdx,1);
+          State.collage.images.splice(toIdx,0,moved_);
+          wrap.insertBefore(el, fromIdx<toIdx ? targetThumb.nextSibling : targetThumb);
+        }
+      }
+    };
+    const onUp = (up)=>{
+      try{ el.releasePointerCapture(up.pointerId); }catch(e){}
+      el.classList.remove('dragging');
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+      if(moved) this.render();
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+  },
+  ratioWH(ratioStr, baseW){
+    const [rw, rh] = ratioStr.split(':').map(Number);
+    return { w: baseW, h: Math.round(baseW * (rh/rw)) };
+  },
+  render(){
+    const canvas = $('#collage-canvas');
+    const stageW = 900;
+    const dims = this.ratioWH(State.collage.ratio, stageW);
+    canvas.width = dims.w; canvas.height = dims.h;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = State.collage.bg === 'black' ? '#000' : '#fff';
+    ctx.fillRect(0,0,dims.w,dims.h);
+
+    const imgs = State.collage.images;
+    this._cellRects = [];
+    if(!imgs.length) return;
+
+    const layouts = getLayoutsForCount(imgs.length);
+    const layout = layouts.find(l=> l.id===State.collage.layout) || layouts[0];
+    if(layout.id !== State.collage.layout) State.collage.layout = layout.id;
+
+    const gap = State.collage.gap;
+    const radius = State.collage.radius;
+
+    layout.cells.forEach((cell, idx)=>{
+      if(idx >= imgs.length) return;
+      const x = cell.x*dims.w + gap/2;
+      const y = cell.y*dims.h + gap/2;
+      const w = cell.w*dims.w - gap;
+      const h = cell.h*dims.h - gap;
+      this._cellRects.push({x,y,w,h});
+      this.drawCover(ctx, imgs[idx], x, y, w, h, radius);
+    });
+  },
+  // Desenha a imagem cobrindo a célula, aplicando o deslocamento (offX/offY) que o usuário
+  // definiu ao arrastar a imagem para reenquadrá-la; o resultado fica sempre "preso" às bordas.
+  drawCover(ctx, item, x, y, w, h, radius){
+    const img = item.img;
+    ctx.save();
+    this.roundRectPath(ctx, x, y, w, h, radius);
+    ctx.clip();
+    const ir = img.width/img.height, cr = w/h;
+    let sw, sh;
+    if(ir > cr){ sh = img.height; sw = sh*cr; }
+    else { sw = img.width; sh = sw/cr; }
+    const maxOffX = Math.max(0, (img.width - sw)/2);
+    const maxOffY = Math.max(0, (img.height - sh)/2);
+    let offX = Math.max(-maxOffX, Math.min(maxOffX, item.offX||0));
+    let offY = Math.max(-maxOffY, Math.min(maxOffY, item.offY||0));
+    item.offX = offX; item.offY = offY;
+    const sx = (img.width-sw)/2 + offX;
+    const sy = (img.height-sh)/2 + offY;
+    ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+    ctx.restore();
+  },
+  // Permite arrastar o dedo/mouse diretamente sobre o quadro da colagem para mover a foto
+  // dentro da própria célula (reenquadrar), sem alterar o layout.
+  initCanvasDrag(){
+    const canvas = $('#collage-canvas');
+    const toCanvasPoint = (clientX, clientY)=>{
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (clientX-rect.left) * (canvas.width/rect.width),
+        y: (clientY-rect.top) * (canvas.height/rect.height)
+      };
+    };
+    let dragCtx = null;
+    canvas.addEventListener('pointerdown', (ev)=>{
+      const p = toCanvasPoint(ev.clientX, ev.clientY);
+      const rects = this._cellRects || [];
+      const idx = rects.findIndex(r=> p.x>=r.x && p.x<=r.x+r.w && p.y>=r.y && p.y<=r.y+r.h);
+      if(idx<0 || idx>=State.collage.images.length) return;
+      const item = State.collage.images[idx];
+      canvas.setPointerCapture(ev.pointerId);
+      dragCtx = { idx, startX:ev.clientX, startY:ev.clientY, startOffX:item.offX||0, startOffY:item.offY||0, cellW:rects[idx].w, cellH:rects[idx].h };
+    });
+    canvas.addEventListener('pointermove', (ev)=>{
+      if(!dragCtx) return;
+      const item = State.collage.images[dragCtx.idx];
+      if(!item) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width/rect.width, scaleY = canvas.height/rect.height;
+      const dxCanvas = (ev.clientX-dragCtx.startX)*scaleX;
+      const dyCanvas = (ev.clientY-dragCtx.startY)*scaleY;
+      const img = item.img;
+      const ir = img.width/img.height, cr = dragCtx.cellW/dragCtx.cellH;
+      let sw, sh;
+      if(ir > cr){ sh = img.height; sw = sh*cr; } else { sw = img.width; sh = sw/cr; }
+      const scaleSrcX = sw/dragCtx.cellW, scaleSrcY = sh/dragCtx.cellH;
+      item.offX = dragCtx.startOffX - dxCanvas*scaleSrcX;
+      item.offY = dragCtx.startOffY - dyCanvas*scaleSrcY;
+      this.render();
+    });
+    const endDrag = ()=>{ dragCtx = null; };
+    canvas.addEventListener('pointerup', endDrag);
+    canvas.addEventListener('pointercancel', endDrag);
+  },
+  roundRectPath(ctx, x, y, w, h, r){
+    r = Math.min(r, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
+  },
+  async buildFinalCanvas(setStep){
+    setStep && setStep('Preparando arquivo');
+    // Re-render at a higher resolution for export
+    const exportW = 2000;
+    const tmp = document.createElement('canvas');
+    const dims = this.ratioWH(State.collage.ratio, exportW);
+    tmp.width = dims.w; tmp.height = dims.h;
+    const ctx = tmp.getContext('2d');
+    ctx.fillStyle = State.collage.bg === 'black' ? '#000' : '#fff';
+    ctx.fillRect(0,0,dims.w,dims.h);
+
+    setStep && setStep('Finalizando');
+    const imgs = State.collage.images;
+    if(imgs.length){
+      const layouts = getLayoutsForCount(imgs.length);
+      const layout = layouts.find(l=> l.id===State.collage.layout) || layouts[0];
+      const scaleFactor = exportW / 900;
+      const gap = State.collage.gap * scaleFactor;
+      const radius = State.collage.radius * scaleFactor;
+      layout.cells.forEach((cell, idx)=>{
+        if(idx >= imgs.length) return;
+        const x = cell.x*dims.w + gap/2;
+        const y = cell.y*dims.h + gap/2;
+        const w = cell.w*dims.w - gap;
+        const h = cell.h*dims.h - gap;
+        this.drawCover(ctx, imgs[idx], x, y, w, h, radius);
+      });
+    }
+    await new Promise(r=> setTimeout(r, 100));
+    return tmp;
+  },
+  // Saves (or updates) a history entry for the current project when the
+  // user navigates away from the editor, so work isn't lost if they never export.
+  async saveSnapshotToHistory(){
+    if(!State.collage.images.length) return;
+    const canvas = $('#collage-canvas');
+    if(!canvas || !canvas.width || !canvas.height) return;
+    try{
+      const blob = await new Promise(res=> canvas.toBlob(res, 'image/png'));
+      if(!blob) return;
+      const thumbBlob = await Export.makeThumb(blob, 'collage');
+      State.collage.historyId = await History.upsert(State.collage.historyId, {
+        name: 'novva-ia-colagem.png',
+        type: 'collage',
+        resolution: canvas.width+'×'+canvas.height,
+        thumbBlob
+      });
+    }catch(e){ console.error(e); }
+  }
+};
+
+/* ---------------------------------------------------------------------
+   VIDEO EDITOR
+   --------------------------------------------------------------------- */
+const VideoEditor = {
+  init(){
+    $$('#view-video-editor input[type=range]').forEach(inp=>{
+      inp.addEventListener('input', ()=> this.onAdjustInput(inp));
+    });
+    $('#btn-reset-video-adjust').addEventListener('click', ()=> this.resetAdjust());
+    $$('[data-vupscale]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        $$('[data-vupscale]').forEach(b=> b.classList.remove('active'));
+        btn.classList.add('active');
+        State.video.upscaleFactor = Number(btn.dataset.vupscale);
+      });
+    });
+    $('#btn-video-export').addEventListener('click', ()=> Export.openSheet('video'));
+  },
+  async load(file){
+    const url = URL.createObjectURL(file);
+    const video = $('#video-preview');
+    video.src = url;
+    State.video.file = file;
+    State.video.url = url;
+
+    await new Promise((resolve, reject)=>{
+      video.onloadedmetadata = resolve;
+      video.onerror = reject;
+    });
+
+    const duration = video.duration;
+    if(duration > 15.5){
+      Modal.confirmVideoTooLong = true;
+      $('#video-duration-pill').textContent = 'Duração: ' + formatDuration(duration);
+      this.showTooLong();
+      return false;
+    }
+
+    State.video.duration = duration;
+    State.video.width = video.videoWidth;
+    State.video.height = video.videoHeight;
+    State.video.adjust = {brightness:0, contrast:0, saturation:0, exposure:0, sharpness:0};
+    State.video.upscaleFactor = 1;
+    State.video.historyId = null;
+
+    $$('#view-video-editor input[type=range]').forEach(inp=> inp.value = 0);
+    $$('#view-video-editor .val').forEach(v=> v.textContent = '0');
+    $$('[data-vupscale]').forEach(b=> b.classList.toggle('active', b.dataset.vupscale==='1'));
+    $('#video-duration-pill').textContent = 'Duração: ' + formatDuration(duration);
+    $('#video-res-pill').textContent = 'Resolução: ' + video.videoWidth + '×' + video.videoHeight;
+    this.applyCssFilter();
+    Nav.go('video-editor');
+    return true;
+  },
+  showTooLong(){
+    Toast.show('O NOVVA IA aceita vídeos de até 15 segundos.', 'error');
+    const modal = $('#confirm-modal');
+    $('#confirm-title').textContent = 'Vídeo muito longo';
+    $('#confirm-sub').textContent = 'O NOVVA IA aceita vídeos de até 15 segundos.';
+    $('#confirm-yes').textContent = 'Escolher outro vídeo';
+    $('#confirm-no').textContent = 'Cancelar';
+    Modal.show('confirm-modal');
+    const yes = $('#confirm-yes'), no = $('#confirm-no');
+    const cleanup = ()=>{
+      yes.removeEventListener('click', onYes); no.removeEventListener('click', onNo);
+      Modal.hide('confirm-modal');
+      $('#confirm-yes').textContent = 'Confirmar';
+    };
+    const onYes = ()=>{ cleanup(); $('#file-input-single').click(); };
+    const onNo = ()=>{ cleanup(); };
+    yes.addEventListener('click', onYes);
+    no.addEventListener('click', onNo);
+  },
+  onAdjustInput(inp){
+    const key = inp.id.replace('vs-','');
+    const val = Number(inp.value);
+    State.video.adjust[key] = val;
+    $('#vv-'+key).textContent = val;
+    this.applyCssFilter();
+  },
+  resetAdjust(){
+    State.video.adjust = {brightness:0, contrast:0, saturation:0, exposure:0, sharpness:0};
+    $$('#view-video-editor input[type=range]').forEach(inp=> inp.value = 0);
+    $$('#view-video-editor .val').forEach(v=> v.textContent = '0');
+    this.applyCssFilter();
+    Toast.show('Ajustes redefinidos.');
+  },
+  // Atualiza o kernel do filtro SVG (#video-sharpen-filter) de acordo com a
+  // intensidade escolhida. amount vai de 0 (sem efeito, kernel = identidade)
+  // a 1 (kernel de realce total). O divisor da mistura entre identidade e
+  // kernel de nitidez é sempre 1, então o brilho geral nunca muda.
+  updateSharpenKernel(amount){
+    const k = Math.max(0, Math.min(1, amount));
+    const edge = (-k).toFixed(3);
+    const center = (1 + 4*k).toFixed(3);
+    const kernelEl = document.getElementById('video-sharpen-kernel');
+    if(kernelEl) kernelEl.setAttribute('kernelMatrix', `0 ${edge} 0 ${edge} ${center} ${edge} 0 ${edge} 0`);
+  },
+  applyCssFilter(){
+    const a = State.video.adjust;
+    const video = $('#video-preview');
+    const brightness = 1 + (a.brightness/100)*0.6 + (a.exposure/100)*0.5;
+    const contrast = 1 + (a.contrast/100)*0.7;
+    const saturate = 1 + (a.saturation/100);
+    const sharpness = (a.sharpness||0)/100;
+    this.updateSharpenKernel(sharpness);
+    const sharpenPart = sharpness > 0 ? ' url(#video-sharpen-filter)' : '';
+    video.style.filter = `brightness(${brightness}) contrast(${contrast}) saturate(${saturate})${sharpenPart}`;
+  },
+  cssFilterString(){
+    const a = State.video.adjust;
+    const brightness = 1 + (a.brightness/100)*0.6 + (a.exposure/100)*0.5;
+    const contrast = 1 + (a.contrast/100)*0.7;
+    const saturate = 1 + (a.saturation/100);
+    const sharpness = (a.sharpness||0)/100;
+    this.updateSharpenKernel(sharpness);
+    const sharpenPart = sharpness > 0 ? ' url(#video-sharpen-filter)' : '';
+    return `brightness(${brightness}) contrast(${contrast}) saturate(${saturate})${sharpenPart}`;
+  },
+  // Filter used specifically while capturing frames for the final export
+  // (buildFinalBlob). Deliberately excludes the SVG feConvolveMatrix
+  // sharpen pass: that filter is applied in software and, at full output
+  // resolution, a single drawImage() call with it active can take several
+  // hundred ms per frame on a phone. Because that draw happens synchronously
+  // inside the capture loop, the browser's main thread stalls long enough
+  // that even the *video element's own* 'ended'/timeupdate events (which
+  // also need the main thread to dispatch) get delayed — while
+  // canvas.captureStream() keeps recording in real wall-clock time and the
+  // independent audio element keeps playing unaffected. The result is
+  // exactly the reported bug: audio finishes on schedule, the picture
+  // freezes on the last successfully-drawn frame, and the file ends up
+  // longer than the real clip (14s in, ~20s out).
+  // Brightness/contrast/saturate are cheap, standard canvas filter
+  // functions (not custom SVG convolution) and stay on. Sharpening remains
+  // fully active in the live preview (video.style.filter, GPU-composited,
+  // costs nothing extra) — only the frame-by-frame *capture* skips it.
+  exportFilterString(){
+    const a = State.video.adjust;
+    const brightness = 1 + (a.brightness/100)*0.6 + (a.exposure/100)*0.5;
+    const contrast = 1 + (a.contrast/100)*0.7;
+    const saturate = 1 + (a.saturation/100);
+    return `brightness(${brightness}) contrast(${contrast}) saturate(${saturate})`;
+  },
+  // Shared resolution calculation so the export, the history preview and the
+  // "resolution" label all agree on the exact same numbers.
+  targetDims(){
+    const w = State.video.width, h = State.video.height;
+    const factor = State.video.upscaleFactor === 2 ? Math.min(2560/Math.max(w,h), 2) : 1;
+    const MAX_DIM = 1920;
+    let outW = Math.round(w*factor), outH = Math.round(h*factor);
+    if(Math.max(outW,outH) > MAX_DIM){
+      const shrink = MAX_DIM / Math.max(outW,outH);
+      outW = Math.round(outW*shrink); outH = Math.round(outH*shrink);
+    }
+    return {w: outW, h: outH};
+  },
+  // Re-encodes the video with filters applied using canvas + MediaRecorder.
+  //
+  // HISTORY OF THIS FUNCTION (kept as a note so this mistake isn't repeated):
+  // v1 played the video in real time and drew each frame via requestAnimationFrame
+  // while an unmuted off.play() fed the recorder. That play() call happened after
+  // several awaits had already used up the click's "user activation" window, which
+  // browsers can refuse (autoplay policy) — and sustained real-time decode+draw+
+  // encode at high resolution could also outrun the device and crash the tab.
+  // v2 tried to fix that by seeking to each frame's exact timestamp one at a time
+  // instead of playing in real time (like the GIF exporter does). That solved the
+  // crash, but introduced a worse bug: canvas.captureStream()'s recording length is
+  // pinned to real WALL-CLOCK time between start()/stop(), not to how many frames
+  // were drawn. Seeking a compressed video hundreds of times is far slower than
+  // sequential decoding (each seek can cost 100–300ms on a phone), so the loop
+  // itself took much longer in real time than the clip's actual length — recording
+  // a 14s video that took ~90s of wall-clock time to render produced a ~90s file:
+  // extreme slow motion, stalls, and a stretched-out result.
+  // v3 goes back to real-time playback — which is what naturally
+  // keeps the recorded length correct, since the video plays at its own normal
+  // speed — but fixes what actually made v1 fail: the frame-drawing video is
+  // always muted (so play() is never blocked by autoplay policy), audio is
+  // captured from a second, independent element on a best-effort basis, every
+  // failure path is caught and cleaned up, and both duration (15s) and output
+  // resolution are capped so the sustained workload stays within safe limits.
+  // v4 tried to fix audio sounding ahead of the picture at the start by having
+  // the draw loop compare currentTime on both elements every frame and nudge
+  // the muted frame-drawing video's playbackRate up/down to chase the audio.
+  // This reintroduced the EXACT v2 failure in a new disguise: canvasStream's
+  // recording length is real wall-clock time, so any sustained period at
+  // playbackRate < 1 makes the video take longer than its real duration to
+  // reach 'ended' while still being captured in real time — a 14s clip came
+  // out as a ~20s slow-motion file, with audio (never rate-adjusted) finishing
+  // on time and the picture dragging on after it. Never change frameVideo's
+  // playback rate while it's being captured — full stop.
+  // v5 (this version) removes all rate/seek manipulation during capture and
+  // instead only delays *when* recorder.start() and the draw loop begin: both
+  // elements are given a brief moment after play() resolves to actually reach
+  // a playing state before anything is captured. That only shifts the start
+  // point, never the speed, so the exported length always equals the clip's
+  // real duration.
+  // v6 fixes a case that STILL stretched the output even under v5's
+  // real-time approach: with the sharpen adjustment active, each drawImage()
+  // call used an SVG feConvolveMatrix filter, which is applied in software
+  // and can take several hundred ms per frame at full resolution on a phone.
+  // Because that call is synchronous inside the capture loop, it stalls the
+  // main thread — and dispatching the video element's own 'ended' event
+  // *also* needs the main thread, so it gets delayed too. Audio (on its own
+  // element) keeps playing and finishes on time; canvas.captureStream() keeps
+  // recording the same frozen last frame in real wall-clock time until the
+  // delayed 'ended' finally arrives — a 14s clip came out ~20s with a frozen
+  // tail and no audio. The fix is NOT to switch to manual frame-stepping with
+  // seek()+'seeked': that was v2, and stepping is slower per frame than
+  // continuous decode (each seek can cost 100–300ms), which only stalls the
+  // main thread *harder* and stretches the wall-clock-timed recording even
+  // more (that's literally what made v2 produce a 90s file from a 14s clip).
+  // captureStream()+MediaRecorder always records real elapsed time between
+  // start()/stop() no matter how frames are produced, so the only real fix
+  // is to keep the capture loop itself fast: exportFilterString() drops the
+  // costly SVG convolution during capture (brightness/contrast/saturate stay
+  // on, they're cheap) while the live preview keeps full sharpening since
+  // that only costs a GPU-composited CSS filter, never per-frame software work.
+  async buildFinalBlob(setStep){
+    if(!('MediaRecorder' in window)){
+      throw new Error('MediaRecorder não suportado neste navegador.');
+    }
+    setStep && setStep('Preparando arquivo');
+
+    // Best-effort: keep the screen awake for the duration of the export.
+    // A screen that dims/locks mid-export can throttle timers and video
+    // decode on some devices, which reproduces the same freeze/stretch bug
+    // this function otherwise guards against. Never blocks export if
+    // unsupported or denied.
+    let wakeLock = null;
+    try{
+      if(navigator.wakeLock && navigator.wakeLock.request){
+        wakeLock = await navigator.wakeLock.request('screen');
+      }
+    }catch(e){ wakeLock = null; }
+
+    const dims = this.targetDims();
+    const outW = dims.w, outH = dims.h;
+    const fps = 24;
+
+    // Muted so play() is never subject to the browser's "no unmuted autoplay
+    // without a fresh user gesture" rule — this is what actually crashed v1.
+    //
+    // v7: frameVideo/audioEl are attached to the document (invisibly) below.
+    // Neither element was ever inserted into the page before — they only
+    // existed as detached JS objects. Mobile browsers (iOS Safari and some
+    // Android WebViews in particular) are allowed to suspend DECODING a
+    // <video> that isn't part of the rendered document after a few seconds,
+    // as a power-saving measure, even while .play()/.pause()/.currentTime
+    // keep reporting normally from JS. That exactly matches "the picture
+    // freezes solid a few seconds in while the audio keeps going": video
+    // decode got suspended, audio (not subject to the same throttling)
+    // didn't. Giving both elements real (if invisible) layout in the DOM —
+    // not display:none, which can trigger the same suspension — stops the
+    // browser from treating them as background/inactive media.
+    //
+    // v8 fixes a gap in v7 that made this STILL happen on every export:
+    // 'left:-9999px; top:-9999px' keeps the elements DOM-attached but places
+    // them 9999px outside the viewport. Mobile browsers' background-media
+    // throttling is driven by viewport intersection (the same mechanism as
+    // IntersectionObserver), not merely by display:none — an element parked
+    // 9999px away from the visible area is treated as "not visible" and can
+    // still have its decode suspended, exactly like a detached or
+    // display:none element would. v7's own reasoning was right, its
+    // positioning undid it. The fix is to keep the elements inside the
+    // viewport (top:0; left:0) so they always count as "visible" to that
+    // heuristic, while making them imperceptible to the user via a 1px size,
+    // near-zero opacity, and a negative z-index tucked behind the app UI.
+    const offscreenStyle = 'position:fixed; left:0; top:0; width:1px; height:1px; opacity:0.01; overflow:hidden; z-index:-1; pointer-events:none;';
+    const frameVideo = document.createElement('video');
+    frameVideo.src = State.video.url;
+    frameVideo.muted = true;
+    frameVideo.playsInline = true;
+    frameVideo.setAttribute('style', offscreenStyle);
+    document.body.appendChild(frameVideo);
+    await new Promise((resolve, reject)=>{
+      frameVideo.onloadedmetadata = resolve;
+      frameVideo.onerror = ()=> reject(new Error('Não foi possível ler o vídeo.'));
+    });
+
+    const duration = frameVideo.duration;
+    if(!duration || !isFinite(duration)){
+      throw new Error('Não foi possível determinar a duração do vídeo.');
+    }
+
+    // v8: filters are applied on a small buffer canvas at the video's native
+    // resolution, then that already-filtered frame is scaled (no filter,
+    // plain drawImage) into the final output canvas. ctx.filter cost scales
+    // with the pixel count it's applied to; doing it at native res instead
+    // of at up to 1920px (or 2560px pre-cap with 2x upscale) keeps every
+    // frame of the capture loop fast regardless of the chosen output
+    // resolution, which is what actually keeps the video element's 'ended'
+    // event (and requestVideoFrameCallback) firing on schedule instead of
+    // getting delayed by a slow main thread.
+    const nativeW = frameVideo.videoWidth || outW;
+    const nativeH = frameVideo.videoHeight || outH;
+    const srcCanvas = document.createElement('canvas');
+    srcCanvas.width = nativeW; srcCanvas.height = nativeH;
+    const srcCtx = srcCanvas.getContext('2d');
+    srcCtx.filter = this.exportFilterString();
+
+    const canvas = document.createElement('canvas');
+    canvas.width = outW; canvas.height = outH;
+    const ctx = canvas.getContext('2d');
+    const drawFilteredFrame = ()=>{
+      srcCtx.drawImage(frameVideo, 0, 0, nativeW, nativeH);
+      ctx.drawImage(srcCanvas, 0, 0, outW, outH);
+    };
+    drawFilteredFrame(); // seed a first frame before recording starts
+
+    const canvasStream = canvas.captureStream(fps);
+
+    // Independent element used only to harvest an audio track, kept fully
+    // decoupled from frame rendering so an audio failure never blocks export.
+    // Also attached to the DOM for the same reason as frameVideo above.
+    let audioEl = null;
+    try{
+      if(HTMLMediaElement.prototype.captureStream){
+        audioEl = document.createElement('video');
+        audioEl.src = State.video.url;
+        audioEl.muted = false;
+        audioEl.volume = 0; // don't play audible sound locally, just feed the track
+        audioEl.playsInline = true;
+        audioEl.setAttribute('style', offscreenStyle);
+        document.body.appendChild(audioEl);
+        await new Promise(res=>{ audioEl.onloadedmetadata = res; });
+        const audioTracks = audioEl.captureStream().getAudioTracks();
+        if(audioTracks.length) audioTracks.forEach(t=> canvasStream.addTrack(t));
+        else { audioEl.remove(); audioEl = null; }
+      }
+    }catch(e){ if(audioEl){ try{ audioEl.remove(); }catch(e2){} } audioEl = null; /* export continues silently */ }
+
+    const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+      ? 'video/webm;codecs=vp9,opus'
+      : (MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : '');
+    const recorder = new MediaRecorder(canvasStream, mime ? {mimeType:mime} : undefined);
+    const chunks = [];
+    recorder.ondataavailable = (e)=>{ if(e.data.size>0) chunks.push(e.data); };
+    let recError = null;
+    recorder.onerror = (e)=>{ recError = e.error || new Error('Falha ao gravar o vídeo.'); };
+    const stopped = new Promise(resolve=>{ recorder.onstop = resolve; });
+
+    const cleanup = ()=>{
+      try{ frameVideo.pause(); frameVideo.removeAttribute('src'); frameVideo.load(); frameVideo.remove(); }catch(e){}
+      if(audioEl){ try{ audioEl.pause(); audioEl.removeAttribute('src'); audioEl.load(); audioEl.remove(); }catch(e){} }
+      canvas.width = 0; canvas.height = 0;
+      srcCanvas.width = 0; srcCanvas.height = 0;
+      if(wakeLock){ try{ wakeLock.release(); }catch(e){} wakeLock = null; }
+    };
+
+    setStep && setStep('Melhorando detalhes');
+    frameVideo.currentTime = 0;
+    if(audioEl) audioEl.currentTime = 0;
+
+    // Fire both play() calls back-to-back (no await between them) so audio and
+    // video start within the same tick instead of drifting apart.
+    let playError = null;
+    const frameVideoPlayPromise = frameVideo.play().catch(e=>{ playError = e; });
+    const audioPlayPromise = audioEl ? audioEl.play().catch(()=>{ audioEl = null; }) : Promise.resolve();
+    await Promise.all([frameVideoPlayPromise, audioPlayPromise]);
+
+    if(playError){
+      cleanup();
+      try{ recorder.stop(); }catch(e){}
+      throw new Error('Não foi possível reproduzir o vídeo para exportação.');
+    }
+
+    // By the time play() resolves, playback has usually only just begun (the
+    // very first frame/sample may still be mid-decode). A short, FIXED delay
+    // here — never a change to play speed — lets both elements settle into
+    // real playback before anything is captured, which is what was actually
+    // making the audio sound like it started slightly ahead of the picture.
+    await new Promise(res=> setTimeout(res, 120));
+
+    recorder.start(250);
+
+    let drawFailed = null;
+    let raf = null;
+    let rvfcHandle = null;
+    // requestVideoFrameCallback fires once per actual decoded video frame
+    // (media-pipeline driven), not per display refresh, so it keeps tracking
+    // real decode progress even if the display's refresh rate/visibility
+    // changes mid-export. Falls back to requestAnimationFrame where absent.
+    const hasRVFC = typeof frameVideo.requestVideoFrameCallback === 'function';
+    const drawFrame = ()=>{
+      try{ drawFilteredFrame(); }
+      catch(e){ drawFailed = e; return; }
+      if(frameVideo.ended || frameVideo.paused || drawFailed) return;
+      if(hasRVFC){
+        rvfcHandle = frameVideo.requestVideoFrameCallback(drawFrame);
+      } else {
+        raf = requestAnimationFrame(drawFrame);
+      }
+    };
+    drawFrame();
+
+    setStep && setStep('Aumentando resolução');
+    // Watchdog: guarantees the export can never hang forever even if 'ended'
+    // fails to fire on some device — worst case we stop at duration + margin.
+    // Also checks currentTime directly on every poll tick (not just the
+    // 'ended' event) so completion is caught immediately even if event
+    // dispatch is briefly delayed, instead of waiting on the event alone.
+    // Stall guard: if currentTime stops advancing for ~1.8s while the
+    // element still reports "playing" (not paused/ended), decode has
+    // effectively frozen (e.g. suspended by the browser despite the DOM
+    // attachment fix on some device). Fail loudly instead of silently
+    // exporting a video frozen on its last good frame.
+    let lastTime = frameVideo.currentTime, lastAdvance = performance.now();
+    const watchdogMs = duration*1000 + 4000;
+    await new Promise(resolve=>{
+      let settled = false;
+      const finish = ()=>{ if(!settled){ settled = true; resolve(); } };
+      frameVideo.onended = finish;
+      const timer = setTimeout(finish, watchdogMs);
+      const poll = setInterval(()=>{
+        if(frameVideo.currentTime > lastTime + 0.01){
+          lastTime = frameVideo.currentTime; lastAdvance = performance.now();
+        } else if(!frameVideo.paused && !frameVideo.ended && performance.now() - lastAdvance > 1800){
+          drawFailed = drawFailed || new Error('A reprodução do vídeo travou durante a exportação. Tente novamente ou reduza a qualidade.');
+        }
+        if(drawFailed || recError || settled || frameVideo.ended || frameVideo.currentTime >= duration - 0.05){
+          clearInterval(poll); clearTimeout(timer); finish();
+        }
+      }, 100);
+    });
+    if(raf) cancelAnimationFrame(raf);
+    if(rvfcHandle && hasRVFC){ try{ frameVideo.cancelVideoFrameCallback(rvfcHandle); }catch(e){} }
+    if(audioEl){ try{ audioEl.pause(); }catch(e){} }
+
+    try{ recorder.stop(); }catch(e){}
+    await stopped;
+    cleanup();
+
+    if(drawFailed){
+      throw drawFailed instanceof Error ? drawFailed : new Error('Não foi possível renderizar os quadros do vídeo.');
+    }
+    if(recError){
+      throw recError instanceof Error ? recError : new Error('Não foi possível processar o vídeo.');
+    }
+    if(!chunks.length){
+      throw new Error('A exportação não gerou nenhum dado de vídeo.');
+    }
+
+    setStep && setStep('Finalizando');
+    const blob = new Blob(chunks, {type:'video/webm'});
+    return {blob, width:outW, height:outH};
+  },
+  // Saves (or updates) a history entry for the current project when the
+  // user navigates away from the editor, so work isn't lost if they never export.
+  async saveSnapshotToHistory(){
+    if(!State.video.file) return;
+    try{
+      const thumbBlob = await Export.makeThumb(null, 'video');
+      const {w, h} = this.targetDims();
+      State.video.historyId = await History.upsert(State.video.historyId, {
+        name: State.video.file.name || 'novva-ia-video.webm',
+        type: 'video',
+        resolution: w+'×'+h,
+        thumbBlob
+      });
+    }catch(e){ console.error(e); }
+  }
+};
+
+/* ---------------------------------------------------------------------
+   FILE SELECTION
+   --------------------------------------------------------------------- */
+const FileSelect = {
+  init(){
+    $('#btn-select-file').addEventListener('click', ()=> this.pickSingle(null));
+    $('#btn-select-file-2').addEventListener('click', ()=> this.pickSingle(null));
+    $('#dropzone').addEventListener('click', ()=> this.pickSingle(null));
+    $$('[data-kind-cta]').forEach(el=>{
+      el.addEventListener('click', ()=> this.pickSingle(el.dataset.kindCta));
+    });
+    $('#file-input-single').addEventListener('change', (e)=> this.handleSingle(e));
+    $('#file-input-multi').addEventListener('change', (e)=>{
+      if(e.target.files.length){
+        Collage.addFiles(e.target.files);
+      }
+      e.target.value = '';
+    });
+  },
+  pickSingle(kindHint){
+    State.currentKindHint = kindHint;
+    if(kindHint === 'collage'){
+      Nav.go('collage');
+      $('#file-input-multi').click();
+      return;
+    }
+    const input = $('#file-input-single');
+    input.accept = kindHint === 'video'
+      ? 'video/mp4,video/quicktime'
+      : kindHint === 'image'
+        ? 'image/jpeg,image/png,image/webp'
+        : 'image/jpeg,image/png,image/webp,video/mp4,video/quicktime';
+    input.click();
+  },
+  async handleSingle(e){
+    const file = e.target.files[0];
+    e.target.value = '';
+    if(!file) return;
+
+    const isImage = file.type.startsWith('image/');
+    const isVideo = file.type.startsWith('video/');
+
+    if(!isImage && !isVideo){
+      Toast.show('Formato não suportado. Escolha uma imagem ou vídeo compatível.', 'error');
+      return;
+    }
+    if(isImage && !['image/jpeg','image/png','image/webp'].includes(file.type)){
+      Toast.show('Formato de imagem não suportado. Use JPG, PNG ou WEBP.', 'error');
+      return;
+    }
+    // size guard: ~40MP-equivalent safety check for local canvas processing
+    const MAX_BYTES = 60 * 1024 * 1024;
+    if(file.size > MAX_BYTES){
+      Toast.show('Arquivo muito grande. Tente uma imagem ou vídeo menor.', 'error');
+      return;
+    }
+
+    Toast.show('Arquivo selecionado.', 'success');
+
+    if(isImage){
+      try{ await ImageEditor.load(file); }
+      catch(err){ console.error(err); Toast.show('Não foi possível processar este arquivo. Tente novamente.', 'error'); }
+    } else {
+      try{ await VideoEditor.load(file); }
+      catch(err){ console.error(err); Toast.show('Não foi possível processar este arquivo. Tente novamente.', 'error'); }
+    }
+  }
+};
+
+/* ---------------------------------------------------------------------
+   EXPORT — sheet + real file generation
+   --------------------------------------------------------------------- */
+const EXPORT_FORMATS = {
+  image: [
+    {id:'jpg', label:'JPG', sub:'Compacto'},
+    {id:'png', label:'PNG', sub:'Sem perdas'},
+    {id:'pdf', label:'PDF', sub:'Documento'},
+    {id:'svg', label:'SVG', sub:'Vetorial*'}
+  ],
+  video: [
+    {id:'webm', label:'WebM', sub:'Recomendado'},
+    {id:'gif', label:'GIF', sub:'Curto'}
+  ],
+  collage: [
+    {id:'jpg', label:'JPG', sub:'Compacto'},
+    {id:'png', label:'PNG', sub:'Sem perdas'},
+    {id:'pdf', label:'PDF', sub:'Documento'},
+    {id:'pptx', label:'PPTX', sub:'Slide'}
+  ]
+};
+
+const Export = {
+  init(){
+    $('#export-sheet-backdrop').addEventListener('click', ()=> this.closeSheet());
+    $$('#export-quality-row .opt-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        $$('#export-quality-row .opt-btn').forEach(b=> b.classList.remove('active'));
+        btn.classList.add('active');
+        this.currentQuality = Number(btn.dataset.quality);
+        $('#exp-quality').textContent = btn.textContent.trim();
+      });
+    });
+    $('#btn-do-export').addEventListener('click', ()=> this.runExport());
+    $('#btn-result-download').addEventListener('click', ()=> this.downloadResult());
+    $('#btn-result-share').addEventListener('click', ()=> this.shareResult());
+    $('#btn-result-edit-again').addEventListener('click', ()=>{
+      Modal.hide('result-modal');
+    });
+    $('#btn-result-home').addEventListener('click', ()=>{
+      Modal.hide('result-modal');
+      Nav.go('home');
+    });
+  },
+  openSheet(type){
+    this.currentType = type;
+    this.currentFormat = this.pickDefaultFormat(type);
+    this.currentQuality = State.settings.quality;
+
+    // Vídeo: a qualidade "Máxima" causa travamentos, então não é oferecida.
+    const maxQualityBtn = $('#export-quality-row [data-quality="1"]');
+    if(type === 'video'){
+      maxQualityBtn.style.display = 'none';
+      if(this.currentQuality >= 1) this.currentQuality = 0.8;
+    } else {
+      maxQualityBtn.style.display = '';
+    }
+
+    const grid = $('#export-fmt-grid');
+    grid.innerHTML = '';
+    EXPORT_FORMATS[type].forEach(f=>{
+      const btn = document.createElement('button');
+      btn.className = 'fmt-btn' + (f.id===this.currentFormat ? ' active':'');
+      btn.innerHTML = `${f.label}<small>${f.sub}</small>`;
+      btn.addEventListener('click', ()=>{
+        this.currentFormat = f.id;
+        $$('.fmt-btn', grid).forEach(b=> b.classList.remove('active'));
+        btn.classList.add('active');
+        $('#exp-format').textContent = f.label.toUpperCase();
+        $('#export-quality-row').style.display = (f.id==='png' || f.id==='svg' || f.id==='pptx') ? 'none' : 'flex';
+      });
+      grid.appendChild(btn);
+    });
+
+    $('#export-quality-row').style.display = (this.currentFormat==='png'||this.currentFormat==='svg'||this.currentFormat==='pptx') ? 'none':'flex';
+    $('#exp-format').textContent = this.currentFormat.toUpperCase();
+    $('#exp-quality').textContent = this.currentQuality>=1 ? 'Máxima' : this.currentQuality>=0.8 ? 'Alta':'Boa';
+    $$('#export-quality-row .opt-btn').forEach(b=>{
+      b.classList.toggle('active', Number(b.dataset.quality)===this.currentQuality);
+    });
+
+    let resText = '—';
+    if(type==='image'){
+      const dims = Upscale.targetDims(State.image.naturalW, State.image.naturalH, State.image.upscaleFactor);
+      resText = dims.w + ' × ' + dims.h;
+    } else if(type==='video'){
+      const dims = VideoEditor.targetDims();
+      resText = dims.w + ' × ' + dims.h;
+    } else if(type==='collage'){
+      resText = '2000 × ' + Math.round(2000 * (Collage.ratioWH(State.collage.ratio,900).h/900));
+    }
+    $('#exp-resolution').textContent = resText;
+
+    $('#export-sheet-backdrop').classList.add('show');
+    $('#export-sheet').classList.add('show');
+  },
+  pickDefaultFormat(type){
+    const avail = EXPORT_FORMATS[type].map(f=>f.id);
+    return avail.includes(State.settings.format) ? State.settings.format : avail[0];
+  },
+  closeSheet(){
+    $('#export-sheet-backdrop').classList.remove('show');
+    $('#export-sheet').classList.remove('show');
+  },
+  async runExport(){
+    this.closeSheet();
+    const type = this.currentType;
+    const format = this.currentFormat;
+    const quality = this.currentQuality;
+
+    try{
+      if(type === 'image'){
+        await Processing.run(
+          ['Preparando arquivo','Analisando','Melhorando detalhes','Aumentando resolução','Finalizando'],
+          async (setStep)=>{
+            const canvas = await ImageEditor.buildFinalCanvas(setStep);
+            const {blob, ext, mime} = await this.canvasToFormat(canvas, format, quality);
+            await this.finish(blob, 'novva-ia-imagem.'+ext, 'image', canvas.width+'×'+canvas.height);
+          }
+        );
+      } else if(type === 'collage'){
+        await Processing.run(
+          ['Preparando arquivo','Combinando imagens','Finalizando'],
+          async (setStep)=>{
+            const canvas = await Collage.buildFinalCanvas(setStep);
+            const {blob, ext} = await this.canvasToFormat(canvas, format, quality);
+            await this.finish(blob, 'novva-ia-colagem.'+ext, 'collage', canvas.width+'×'+canvas.height);
+          }
+        );
+      } else if(type === 'video'){
+        await Processing.run(
+          ['Preparando arquivo','Analisando','Melhorando detalhes','Aumentando resolução','Finalizando'],
+          async (setStep)=>{
+            if(format === 'webm'){
+              const {blob, width, height} = await VideoEditor.buildFinalBlob(setStep);
+              await this.finish(blob, 'novva-ia-video.webm', 'video', width+'×'+height);
+            } else if(format === 'gif'){
+              const gifBlob = await this.exportGif(setStep);
+              await this.finish(gifBlob, 'novva-ia-video.gif', 'video', State.video.width+'×'+State.video.height);
+            }
+          }
+        );
+      }
+    }catch(err){
+      console.error(err);
+    }
+  },
+  async canvasToFormat(canvas, format, quality){
+    if(format === 'jpg'){
+      const blob = await new Promise(res=> canvas.toBlob(res, 'image/jpeg', quality));
+      return {blob, ext:'jpg', mime:'image/jpeg'};
+    }
+    if(format === 'png'){
+      const blob = await new Promise(res=> canvas.toBlob(res, 'image/png'));
+      return {blob, ext:'png', mime:'image/png'};
+    }
+    if(format === 'pdf'){
+      const { jsPDF } = window.jspdf;
+      const orientation = canvas.width >= canvas.height ? 'l' : 'p';
+      const pdf = new jsPDF({orientation, unit:'pt', format:[canvas.width, canvas.height]});
+      const dataUrl = canvas.toDataURL('image/jpeg', quality || 0.92);
+      pdf.addImage(dataUrl, 'JPEG', 0, 0, canvas.width, canvas.height);
+      const blob = pdf.output('blob');
+      return {blob, ext:'pdf', mime:'application/pdf'};
+    }
+    if(format === 'svg'){
+      const dataUrl = canvas.toDataURL('image/png');
+      const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}" viewBox="0 0 ${canvas.width} ${canvas.height}"><image width="${canvas.width}" height="${canvas.height}" href="${dataUrl}"/></svg>`;
+      const blob = new Blob([svgStr], {type:'image/svg+xml'});
+      return {blob, ext:'svg', mime:'image/svg+xml'};
+    }
+    if(format === 'pptx'){
+      const pptx = new window.PptxGenJS();
+      const slide = pptx.addSlide();
+      const dataUrl = canvas.toDataURL('image/png');
+      const pageW = 10, pageH = 10 * (canvas.height/canvas.width);
+      slide.addImage({data:dataUrl, x:0, y:0, w:pageW, h:Math.min(pageH,7.5)});
+      const blob = await pptx.write('blob');
+      return {blob, ext:'pptx', mime:'application/vnd.openxmlformats-officedocument.presentationml.presentation'};
+    }
+    throw new Error('Formato não suportado: '+format);
+  },
+  async exportGif(setStep){
+    setStep && setStep('Preparando arquivo');
+    const srcVideo = $('#video-preview');
+    const off = document.createElement('video');
+    off.src = State.video.url;
+    off.muted = true;
+    await new Promise(res=>{ off.onloadedmetadata = res; });
+
+    const maxGifDuration = Math.min(off.duration, 8); // limit for reasonable file size
+    const fps = 8;
+    const scale = 480 / Math.max(off.videoWidth, off.videoHeight);
+    const w = Math.round(off.videoWidth*scale), h = Math.round(off.videoHeight*scale);
+
+    const gif = new GIF({workers:2, quality:10, width:w, height:h, workerScript:'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'});
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.filter = VideoEditor.cssFilterString();
+
+    setStep && setStep('Analisando');
+    const frameCount = Math.floor(maxGifDuration * fps);
+    for(let i=0;i<frameCount;i++){
+      const t = i / fps;
+      off.currentTime = t;
+      await new Promise(res=>{ off.onseeked = res; });
+      ctx.drawImage(off, 0, 0, w, h);
+      gif.addFrame(ctx, {copy:true, delay:1000/fps});
+      if(i % 10 === 0) setStep && setStep('Melhorando detalhes');
+    }
+
+    setStep && setStep('Finalizando');
+    return new Promise((resolve, reject)=>{
+      gif.on('finished', (blob)=> resolve(blob));
+      gif.on('error', reject);
+      gif.render();
+    });
+  },
+  async finish(blob, filename, type, resolution){
+    this.lastBlob = blob;
+    this.lastFilename = filename;
+    const thumbBlob = await this.makeThumb(blob, type);
+    await History.add({
+      name: filename,
+      type,
+      resolution,
+      thumbBlob
+    });
+    $('#result-sub').textContent = 'Seu arquivo foi exportado com sucesso.';
+    Modal.show('result-modal');
+    Toast.show('Arquivo exportado com sucesso.', 'success');
+  },
+  async makeThumb(blob, type){
+    if(type === 'video'){
+      // simple placeholder thumb for video/gif entries (solid tile with icon rendered to canvas)
+      const c = document.createElement('canvas'); c.width=120; c.height=120;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#141416'; ctx.fillRect(0,0,120,120);
+      ctx.strokeStyle = '#FF1133'; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(45,35); ctx.lineTo(85,60); ctx.lineTo(45,85); ctx.closePath(); ctx.stroke();
+      return new Promise(res=> c.toBlob(res, 'image/png'));
+    }
+    // image/collage: downscale actual blob for thumbnail
+    try{
+      const bmp = await createImageBitmap(blob);
+      const c = document.createElement('canvas');
+      const size = 160;
+      const ratio = bmp.width/bmp.height;
+      c.width = ratio>1 ? size : Math.round(size*ratio);
+      c.height = ratio>1 ? Math.round(size/ratio) : size;
+      c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+      return new Promise(res=> c.toBlob(res, 'image/png'));
+    }catch(e){
+      const c = document.createElement('canvas'); c.width=120; c.height=120;
+      c.getContext('2d').fillRect(0,0,120,120);
+      return new Promise(res=> c.toBlob(res, 'image/png'));
+    }
+  },
+  downloadResult(){
+    if(!this.lastBlob) return;
+    const url = URL.createObjectURL(this.lastBlob);
+    const a = document.createElement('a');
+    a.href = url; a.download = this.lastFilename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=> URL.revokeObjectURL(url), 4000);
+  },
+  async shareResult(){
+    if(!this.lastBlob) return;
+    if(navigator.share && navigator.canShare){
+      try{
+        const file = new File([this.lastBlob], this.lastFilename, {type:this.lastBlob.type});
+        if(navigator.canShare({files:[file]})){
+          await navigator.share({files:[file], title:'NOVVA IA'});
+          return;
+        }
+      }catch(e){ /* fall through to download */ }
+    }
+    Toast.show('Compartilhamento não suportado. Baixando arquivo.');
+    this.downloadResult();
+  }
+};
+
+/* ---------------------------------------------------------------------
+   SETTINGS
+   --------------------------------------------------------------------- */
+const Settings = {
+  KEY:'novva-ia-settings',
+  init(){
+    this.load();
+    $('#set-quality').addEventListener('change', (e)=>{
+      State.settings.quality = Number(e.target.value); this.save();
+    });
+    $('#set-format').addEventListener('change', (e)=>{
+      State.settings.format = e.target.value; this.save();
+    });
+    $('#set-confirm-delete').addEventListener('click', (e)=>{
+      State.settings.confirmDelete = !State.settings.confirmDelete;
+      e.currentTarget.classList.toggle('on', State.settings.confirmDelete);
+      e.currentTarget.setAttribute('aria-checked', String(State.settings.confirmDelete));
+      this.save();
+    });
+    $('#btn-clear-history').addEventListener('click', async ()=>{
+      const ok = await Modal.confirm('Limpar histórico?', 'Todos os projetos salvos neste dispositivo serão removidos.');
+      if(ok){
+        await DB.clear();
+        History.render(); History.renderRecent();
+        Toast.show('Histórico limpo.');
+      }
+    });
+  },
+  save(){
+    try{ localStorage.setItem(this.KEY, JSON.stringify(State.settings)); }catch(e){}
+  },
+  load(){
+    try{
+      const raw = localStorage.getItem(this.KEY);
+      if(raw){
+        const parsed = JSON.parse(raw);
+        Object.assign(State.settings, parsed);
+      }
+    }catch(e){}
+    $('#set-quality').value = String(State.settings.quality);
+    $('#set-format').value = State.settings.format;
+    $('#set-confirm-delete').classList.toggle('on', State.settings.confirmDelete);
+  }
+};
+
+/* ---------------------------------------------------------------------
+   FEEDBACK
+   --------------------------------------------------------------------- */
+function initFeedback(){
+  $('#btn-send-feedback').addEventListener('click', ()=>{
+    const val = $('#feedback-text').value.trim();
+    if(!val){ Toast.show('Escreva uma mensagem antes de enviar.', 'error'); return; }
+    $('#feedback-text').value = '';
+    Toast.show('Obrigado pelo seu feedback!', 'success');
+  });
+}
+
+/* ---------------------------------------------------------------------
+   SPLASH SCREEN
+   --------------------------------------------------------------------- */
+function initSplash(){
+  const splash = $('#splash');
+  const app = $('#app');
+  setTimeout(()=>{
+    splash.classList.add('hide');
+    app.classList.add('ready');
+    setTimeout(()=> splash.remove(), 550);
+  }, 1000);
+}
+
+/* ---------------------------------------------------------------------
+   BOOTSTRAP
+   --------------------------------------------------------------------- */
+document.addEventListener('DOMContentLoaded', ()=>{
+  initSplash();
+  Nav.init();
+  SidePanel.init();
+  FileSelect.init();
+  ImageEditor.init();
+  Collage.init();
+  VideoEditor.init();
+  Export.init();
+  Settings.init();
+  initFeedback();
+  History.renderRecent();
+});
+
+})();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
+</body>
+</html>
