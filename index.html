@@ -660,6 +660,23 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
   .tool-grid{grid-template-columns:repeat(6,1fr);}
 }
 </style>
+
+  <style>
+  body, body * {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  input,
+  textarea,
+  [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: default;
+  }
+</style>
+  
 </head>
 <body>
 
@@ -3157,5 +3174,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
     navigator.serviceWorker.register('./sw.js');
   }
 </script>
+
+  <script>
+  document.addEventListener('contextmenu', function(e) {
+    if (
+      e.target.tagName !== 'INPUT' &&
+      e.target.tagName !== 'TEXTAREA' &&
+      !e.target.isContentEditable
+    ) {
+      e.preventDefault();
+    }
+  });
+</script>
+  
 </body>
 </html>
