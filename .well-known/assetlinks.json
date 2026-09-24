@@ -3,6 +3,7 @@
       "target": {
         "namespace": "android_app",
         "package_name": "io.github.caatchuup331_dev.twa",
-        "sha256_cert_fingerprints": ["4E:23:86:D3:B4:33:62:B4:88:80:26:D7:DB:60:9B:FB:9F:04:BD:A6:95:3E:A6:1D:F4:45:21:F8:16:74:56:85"]
+        "sha256_cert_fingerprints": ["99:AE:73:F3:8F:89:3A:0F:02:83:66:C7:5C:FE:80:52:57:18:99:7E:30:96:82:BA:E9:DD:E0:65:64:D6:56:EB"]
       }
     }]
+
