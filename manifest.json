@@ -1,7 +1,7 @@
 {
-  "name": "NOVVA IA",
-  "short_name": "NOVVA IA",
-  "description": "Aplicativo NOVVA IA para aprimoramento de fotos e vídeos.",
+  "name": "Novva IA",
+  "short_name": "Novva IA",
+  "description": "Aplicativo Novva IA para aprimoramento de fotos e vídeos.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
