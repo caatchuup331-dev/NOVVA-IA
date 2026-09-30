@@ -1,4 +1,4 @@
-const CACHE_NAME = 'novva-ia-v7';
+const CACHE_NAME = 'novva-ia-v8';
 const FILES_TO_CACHE = [
   './',
   './index.html',
