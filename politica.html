@@ -1,244 +1,170 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Política de Privacidade - NOVVA IA</title>
-  <style>
-    :root {
-      --bg: #000000;
-      --card-bg: #0d0d0d;
-      --border: #222222;
-      --text: #ffffff;
-      --text-muted: #a0a0a0;
-      --accent-red: #ff1133;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidade e Termos de Uso - NOVVA IA</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --border: #262626;
+            --text-main: #f5f5f5;
+            --text-muted: #a3a3a3;
+            --accent: #e11d48;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      padding: 20px 15px;
-    }
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 24px 16px;
+        }
 
-    .container {
-      max-width: 750px;
-      margin: 0 auto;
-      background-color: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 30px 25px;
-    }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px 24px;
+        }
 
-    .brand-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 25px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 15px;
-    }
+        .header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+        }
 
-    .brand-dot {
-      width: 10px;
-      height: 10px;
-      background-color: var(--accent-red);
-      border-radius: 50%;
-      display: inline-block;
-    }
+        .brand {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    .brand-title {
-      font-size: 1.4rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-    }
+        .brand-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            display: inline-block;
+        }
 
-    .brand-title span {
-      color: var(--accent-red);
-    }
+        h1 {
+            font-size: 26px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
 
-    h1 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: #ffffff;
-    }
+        h2 {
+            font-size: 18px;
+            color: var(--text-main);
+            margin: 28px 0 12px 0;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+        }
 
-    .intro-text {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 30px;
-    }
+        p, ul {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-bottom: 14px;
+        }
 
-    .section {
-      margin-bottom: 25px;
-    }
+        ul {
+            padding-left: 20px;
+        }
 
-    h2 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 8px;
-    }
+        li {
+            margin-bottom: 8px;
+        }
 
-    p, li {
-      color: #cccccc;
-      font-size: 0.95rem;
-    }
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
 
-    ul {
-      padding-left: 20px;
-      margin-top: 8px;
-    }
+        a:hover {
+            text-decoration: underline;
+        }
 
-    li {
-      margin-bottom: 6px;
-    }
+        .contact-box {
+            background: #1c1c1c;
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
 
-    .contact-box {
-      background-color: #141414;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 15px;
-      margin-top: 10px;
-    }
-
-    .contact-box p {
-      margin-bottom: 5px;
-    }
-
-    .footer {
-      margin-top: 40px;
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border);
-      padding-top: 20px;
-    }
-
-    a {
-      color: var(--accent-red);
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
+        .footer {
+            margin-top: 36px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="container">
-    <!-- Cabeçalho do App -->
-    <div class="brand-header">
-      <span class="brand-dot"></span>
-      <div class="brand-title">NOVVA <span>IA</span></div>
+<div class="container">
+    <div class="header">
+        <div class="brand"><span class="brand-dot"></span> NOVVA IA</div>
+        <h1>Política de Privacidade e Termos de Uso</h1>
+        <p>Última atualização: 26 de agosto de 2026</p>
     </div>
 
-    <h1>Política de Privacidade</h1>
-    <p class="intro-text">
-      Esta Política de Privacidade descreve como o <strong>NOVVA IA</strong> ("nós") coleta, usa e protege as informações dos usuários ao utilizar nosso aplicativo e serviços associados.
-    </p>
+    <p>Esta Política de Privacidade e Termos de Uso descreve como o <strong>NOVVA IA</strong> ("nós", "aplicativo") coleta, utiliza, armazena e protege as informações dos usuários, além de reger as condições de uso da nossa plataforma e serviços associados.</p>
 
-    <!-- 1. Dados Coletados -->
-    <div class="section">
-      <h2>1. Dados coletados</h2>
-      <p>
-        Podemos coletar informações fornecidas diretamente pelo usuário, como arquivos enviados para processamento, e dados técnicos do dispositivo necessários para o funcionamento e estabilidade do aplicativo (como modelo do aparelho, versão do sistema operacional e identificadores anônimos).
-      </p>
-    </div>
+    <h2>1. Coleta de Dados</h2>
+    <p>Podemos coletar informações fornecidas diretamente pelo usuário (como imagens e arquivos enviados voluntariamente para processamento) e dados técnicos estritamente necessários para a estabilidade e funcionamento do sistema, tais como modelo do dispositivo, versão do sistema operacional e identificadores anônimos de sessão.</p>
 
-    <!-- 2. Arquivos Enviados -->
-    <div class="section">
-      <h2>2. Arquivos enviados</h2>
-      <p>
-        Imagens e vídeos selecionados pelo usuário são processados localmente sempre que possível. Quando o processamento exigir um serviço externo de inteligência artificial ou renderização remota, isso será indicado claramente na interface do aplicativo antes da transmissão.
-      </p>
-    </div>
+    <h2>2. Processamento de Arquivos e Imagens</h2>
+    <p>O processamento de dados e renderização visual ocorre localmente no próprio dispositivo do usuário sempre que possível (via JavaScript, WebGL e Canvas). Quando a funcionalidade exigir integração com recursos externos de inteligência artificial ou servidores remotos, os dados serão transmitidos de forma segura e criptografada via HTTPS.</p>
 
-    <!-- 3. Processamento -->
-    <div class="section">
-      <h2>3. Processamento</h2>
-      <p>
-        O processamento de imagens e vídeos pode ocorrer no próprio dispositivo do usuário (via Canvas, WebGL e JavaScript) ou, quando aplicável, por meio de um backend seguro e criptografado integrado para recursos avançados.
-      </p>
-    </div>
+    <h2>3. Armazenamento e Exclusão de Dados</h2>
+    <p>Históricos de criação, preferências de edição e dados temporários são salvos localmente no armazenamento do seu navegador/dispositivo (IndexedDB e localStorage). O usuário pode excluir integralmente seus dados a qualquer momento limpando o cache do aplicativo ou acessando a seção <strong>Ajustes > Limpar histórico</strong>.</p>
 
-    <!-- 4. Armazenamento -->
-    <div class="section">
-      <h2>4. Armazenamento</h2>
-      <p>
-        O histórico de projetos, edições e dados temporários são salvos localmente no próprio dispositivo do usuário (IndexedDB/localStorage) e não são transmitidos para servidores externos de forma contínua, salvo indicação explícita em atualizações futuras.
-      </p>
-    </div>
+    <h2>4. Publicidade e Cookies do Google AdSense</h2>
+    <p>Este aplicativo utiliza o <strong>Google AdSense</strong> para a exibição de anúncios. O Google e seus parceiros utilizam cookies para veicular anúncios com base nas visitas anteriores do usuário a este ou a outros sites na internet.</p>
+    <ul>
+        <li>Os usuários podem optar por desativar a publicidade personalizada acessando as <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">Configurações de anúncios do Google</a>.</li>
+        <li>Alternativamente, você pode orientar os usuários a desativar o uso de cookies de terceiros para publicidade personalizada visitando <a href="https://www.aboutads.info" target="_blank" rel="noopener">aboutads.info</a>.</li>
+    </ul>
 
-    <!-- 5. Serviços de Terceiros -->
-    <div class="section">
-      <h2>5. Serviços de terceiros</h2>
-      <p>
-        O aplicativo pode utilizar bibliotecas e serviços de parceiros confiáveis para garantir o funcionamento correto e envio de novidades:
-      </p>
-      <ul>
-        <li><strong>Google Firebase:</strong> Utilizado para o envio de notificações push importantes e alertas de atualizações (quando autorizado pelo usuário).</li>
-        <li><strong>Redes de Anúncios / CDN:</strong> Bibliotecas de terceiros carregadas via CDN podem ser utilizadas para exibição de anúncios anônimos e funcionalidades específicas de exportação, sujeitas às suas respectivas políticas de privacidade.</li>
-      </ul>
-    </div>
+    <h2>5. Serviços de Terceiros e Analytics</h2>
+    <p>Para garantir a melhor experiência e diagnóstico contínuo, podemos utilizar serviços confiáveis de parceiros:</p>
+    <ul>
+        <li><strong>Google Firebase:</strong> Utilizado para o envio de notificações push (quando autorizadas) e monitoramento anônimo de erros e falhas técnicas (crash logs).</li>
+        <li><strong>Redes de Anúncios e CDNs:</strong> Bibliotecas de terceiros carregadas para entrega eficiente de conteúdos e anúncios anônimos.</li>
+    </ul>
 
-    <!-- 6. Cookies -->
-    <div class="section">
-      <h2>6. Cookies e Armazenamento Local</h2>
-      <p>
-        O NOVVA IA não utiliza cookies de rastreamento publicitário invasivo. Dados de preferências (como qualidade de exportação, tema e formato padrão) são salvos exclusivamente no armazenamento interno do seu dispositivo para melhorar a sua experiência de uso.
-      </p>
-    </div>
+    <h2>6. Termos de Uso e Isenção de Responsabilidade</h2>
+    <p>Ao utilizar o NOVVA IA, o usuário concorda em não empregar a plataforma para gerar, processar ou disseminar conteúdo ilícito, difamatório ou que viole direitos autorais de terceiros. O aplicativo é fornecido "como está", e trabalhamos continuamente para manter a máxima disponibilidade e segurança dos nossos serviços.</p>
 
-    <!-- 7. Analytics -->
-    <div class="section">
-      <h2>7. Analytics</h2>
-      <p>
-        Atualmente o aplicativo não utiliza ferramentas de analytics invasivas ou rastreamento individualizado de terceiros. Quaisquer métricas coletadas são estritamente anônimas e voltadas apenas para diagnóstico de erros e falhas (crashes).
-      </p>
-    </div>
-
-    <!-- 8. Exclusão de Dados -->
-    <div class="section">
-      <h2>8. Exclusão de dados</h2>
-      <p>
-        Como os dados do aplicativo são mantidos localmente, o usuário pode excluir todos os seus dados e histórico a qualquer momento diretamente pelo aplicativo acessando a seção <strong>Ajustes &gt; Limpar histórico</strong> ou simplesmente limpando o cache e dados do aplicativo nas configurações do Android.
-      </p>
-    </div>
-
-    <!-- 9. Segurança -->
-    <div class="section">
-      <h2>9. Segurança</h2>
-      <p>
-        Adotamos medidas técnicas e organizacionais razoáveis para proteger as informações processadas pelo aplicativo. No entanto, ressaltamos que nenhum método de transmissão pela internet ou armazenamento eletrônico é 100% impenetrável.
-      </p>
-    </div>
-
-    <!-- 10. Contato -->
-    <div class="section">
-      <h2>10. Contato</h2>
-      <p>Se você tiver qualquer dúvida, sugestão ou solicitação sobre esta Política de Privacidade, entre em contato conosco:</p>
-      
-      <div class="contact-box">
+    <h2>7. Contato e Suporte</h2>
+    <p>Se você tiver qualquer dúvida, sugestão ou solicitação referente a esta política ou ao funcionamento do aplicativo, entre em contato conosco:</p>
+    
+    <div class="contact-box">
         <p><strong>Responsável:</strong> TAKKA</p>
         <p><strong>E-mail de suporte:</strong> <a href="mailto:suportetakka@gmail.com">suportetakka@gmail.com</a></p>
-        <p><strong>Última atualização:</strong> 26/08/2026</p>
-      </div>
+        <p><strong>Domínio Oficial:</strong> <a href="https://novva.nivoora.com.br">novva.nivoora.com.br</a></p>
     </div>
 
     <div class="footer">
-      &copy; NOVVA IA — Todos os direitos reservados.
+        © NOVVA IA — Todos os direitos reservados.
     </div>
-  </div>
+</div>
 
 </body>
 </html>
