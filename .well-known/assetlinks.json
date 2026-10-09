@@ -2,8 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "io.github.caatchuup331_dev.twa",
-        "sha256_cert_fingerprints": ["99:AE:73:F3:8F:89:3A:0F:02:83:66:C7:5C:FE:80:52:57:18:99:7E:30:96:82:BA:E9:DD:E0:65:64:D6:56:EB"]
+        "package_name": "br.com.nivoora.novva.twa",
+        "sha256_cert_fingerprints": ["72:15:78:79:DC:96:55:29:35:C0:FC:1F:7A:4E:44:7B:F2:93:60:36:6B:0A:ED:77:A5:0E:E2:92:A9:D1:56:C5"]
       }
     }]
-
