@@ -1,8 +1,11 @@
 [{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "com.app.novvaia",
-        "sha256_cert_fingerprints": ["7E:E3:E4:7F:68:0D:AC:3A:D7:75:4F:66:49:5B:48:9D:06:BA:F2:F0:6E:06:35:85:39:A6:B0:85:4E:CC:C9:4F"]
-      }
-    }]
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.app.novvaia",
+    "sha256_cert_fingerprints": [
+      "7E:E3:E4:7F:68:0D:AC:3A:D7:75:4F:66:49:5B:48:9D:06:BA:F2:F0:6E:06:35:85:39:A6:B0:85:4E:CC:C9:4F",
+      "0B:A4:22:56:88:E8:B8:4F:D9:CE:A8:C9:7B:4D:93:14:D4:EA:F2:F8:71:A7:68:4A:3D:39:F1:E8:79:5A:77:D8"
+    ]
+  }
+}]
