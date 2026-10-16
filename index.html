@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta name="theme-color" content="#000000">
-  <script type="module">
+  <script type="module" async>
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
@@ -678,6 +678,77 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
   }
 </style>
   
+<style id="novva-motion">
+/* =========================================================
+   NOVVA IA — CAMADA DE MOVIMENTO (aditiva)
+   Animações sutis de 0.2s–0.4s, só CSS (transform/opacity).
+   Não altera nenhuma regra existente: apenas complementa.
+   ========================================================= */
+
+/* Loader: spinner discreto dentro da splash existente */
+@keyframes novvaFade{from{opacity:0;} to{opacity:1;}}
+#splash::after{
+  content:""; position:absolute; left:50%; bottom:calc(14vh + var(--safe-b));
+  width:26px; height:26px; margin-left:-13px; border-radius:50%;
+  border:2px solid rgba(255,255,255,.1); border-top-color:var(--accent);
+  opacity:0; animation:novvaFade .3s var(--ease) .3s forwards, spin .8s linear infinite;
+}
+
+/* Páginas/abas: aparição gradual dos primeiros blocos */
+@keyframes novvaRise{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+.view.active > :nth-child(-n+5){animation:novvaRise .32s var(--ease) backwards;}
+.view.active > :nth-child(2){animation-delay:.04s;}
+.view.active > :nth-child(3){animation-delay:.08s;}
+.view.active > :nth-child(4){animation-delay:.12s;}
+.view.active > :nth-child(5){animation-delay:.16s;}
+#panel-adjust:not(.hidden), #panel-upscale:not(.hidden){animation:novvaFade .25s var(--ease) backwards;}
+
+/* Modais: entrada com fade + leve escala; ícone de sucesso com pop suave */
+.proc-modal{opacity:0; transform:scale(.94) translateY(8px); transition:transform .3s var(--ease), opacity .3s var(--ease);}
+.modal-backdrop.show .proc-modal{opacity:1; transform:scale(1) translateY(0);}
+@keyframes novvaPop{0%{opacity:0; transform:scale(.6);} 60%{opacity:1; transform:scale(1.06);} 100%{opacity:1; transform:scale(1);}}
+.modal-backdrop.show .result-icon{animation:novvaPop .4s var(--ease) .1s backwards;}
+
+/* Menu lateral: itens entram em cascata curta; hover/toque suaves */
+@keyframes novvaSlide{from{opacity:0; transform:translateX(10px);} to{opacity:1; transform:translateX(0);}}
+.menu-item{transition:background .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);}
+.menu-item:active{transform:scale(.98);}
+.side-panel.show .menu-item{animation:novvaSlide .3s var(--ease) backwards;}
+.side-panel.show .menu-item:nth-of-type(1){animation-delay:.08s;}
+.side-panel.show .menu-item:nth-of-type(2){animation-delay:.11s;}
+.side-panel.show .menu-item:nth-of-type(3){animation-delay:.14s;}
+.side-panel.show .menu-item:nth-of-type(4){animation-delay:.17s;}
+.side-panel.show .menu-item:nth-of-type(5){animation-delay:.2s;}
+.side-panel.show .menu-item:nth-of-type(6){animation-delay:.23s;}
+.side-panel.show .menu-item:nth-of-type(7){animation-delay:.26s;}
+.side-panel.show .menu-item:nth-of-type(8){animation-delay:.29s;}
+
+/* Botões: toque com escala leve e brilho suave no botão principal */
+.btn{transition:transform .2s var(--ease), filter .2s var(--ease), background .2s var(--ease), box-shadow .25s var(--ease), opacity .25s var(--ease);}
+.btn-primary:active{box-shadow:0 4px 12px -6px var(--accent-glow);}
+@media (hover:hover){.btn-primary:hover{box-shadow:0 14px 30px -10px var(--accent-glow);}}
+.icon-btn, .opt-btn, .fmt-btn, .tb-btn{transition:background .2s var(--ease), border-color .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);}
+.opt-btn:active, .fmt-btn:active, .tb-btn:active{transform:scale(.97);}
+.nav-item .nav-fab{transition:transform .25s var(--ease), box-shadow .25s var(--ease);}
+.nav-item:active .nav-fab{transform:scale(.94);}
+
+/* Botão "Política de Privacidade Oficial" (cápsula com borda vermelha e glow sutil) */
+.privacy-web-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  max-width:100%; padding:14px 24px; border-radius:var(--radius-pill);
+  border:1px solid rgba(255,17,51,.5); background:rgba(12,12,13,.72);
+  color:#fff; font-size:14px; font-weight:700; line-height:1.35; text-align:center; text-decoration:none;
+  box-shadow:0 0 0 0 var(--accent-glow);
+  transition:box-shadow .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease), transform .2s var(--ease), opacity .2s var(--ease);
+}
+@media (hover:hover){.privacy-web-btn:hover{border-color:var(--accent); background:rgba(255,17,51,.1); box-shadow:0 0 20px -2px var(--accent-glow);}}
+.privacy-web-btn:active{transform:scale(.97); opacity:.85; border-color:var(--accent); box-shadow:0 0 16px -2px var(--accent-glow);}
+
+/* Acessibilidade: sem cascata para quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce){
+  .view.active > *, .side-panel.show .menu-item, #panel-adjust, #panel-upscale, .modal-backdrop.show .result-icon{animation:none !important;}
+}
+</style>
 </head>
 <body>
 
@@ -1059,7 +1130,7 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
           <p>Responsável: TAKKA<br>E-mail: suportetakka@gmail.com</p>
           <p>Última atualização: 26/08/2026</p>
           <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #222222; text-align: center;">
-  <a href="https://caatchuup331-dev.github.io/NOVVA-IA/politica.html" target="_blank" style="color: #ff1133; text-decoration: underline; font-size: 0.9rem;">
+  <a class="privacy-web-btn" href="https://caatchuup331-dev.github.io/NOVVA-IA/politica.html" target="_blank">
     🌐 Abrir Política de Privacidade Oficial na Web
   </a>
 </div>
@@ -1214,9 +1285,9 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
 <input type="file" id="file-input-multi" accept="image/jpeg,image/png,image/webp" multiple class="visually-hidden" aria-hidden="true">
 
 <!-- ============ CDN LIBRARIES (export features) ============ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
 
 <script>
 (function(){
