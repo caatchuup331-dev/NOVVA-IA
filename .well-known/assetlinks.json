@@ -2,7 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "br.com.nivoora.novva.twa",
-        "sha256_cert_fingerprints": ["AA:2E:C2:A1:51:10:A7:03:86:E1:54:5C:D3:7B:B9:55:A9:C7:62:0E:34:48:1D:2B:49:B2:6A:F0:14:75:B8:70"]
+        "package_name": "com.app.novvaia",
+        "sha256_cert_fingerprints": ["7E:E3:E4:7F:68:0D:AC:3A:D7:75:4F:66:49:5B:48:9D:06:BA:F2:F0:6E:06:35:85:39:A6:B0:85:4E:CC:C9:4F"]
       }
     }]
