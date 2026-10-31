@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" translate="no" class="notranslate">
 <head>
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
@@ -31,6 +31,7 @@
 </script> 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="google" content="notranslate">
 <title>Novva IA</title>
   <link rel="manifest" href="manifest.json">
 <meta name="description" content="NOVVA IA — Melhore, ajuste, aumente a resolução e exporte suas imagens e vídeos em poucos segundos.">
@@ -683,58 +684,29 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
 </style>
   
 <style id="novva-motion">
-/* =========================================================
-   NOVVA IA — CAMADA DE MOVIMENTO (aditiva)
-   Animações sutis de 0.2s–0.4s, só CSS (transform/opacity).
-   Não altera nenhuma regra existente: apenas complementa.
-   ========================================================= */
+/* NOVVA IA — animações leves. Um único efeito: fade-in de 0.25s + translateY de 5px.
+   Usado APENAS em: troca de telas (.view.active), abertura de modais e itens do menu lateral.
+   Cabeçalho (.app-header) e barra inferior (.bottom-nav) nunca são animados. */
+@keyframes novva-in{from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);}}
 
-/* Loader: spinner discreto dentro da splash existente */
-@keyframes novvaFade{from{opacity:0;} to{opacity:1;}}
+/* Loader da splash: spinner contínuo, sem animação de entrada */
 #splash::after{
   content:""; position:absolute; left:50%; bottom:calc(14vh + var(--safe-b));
   width:26px; height:26px; margin-left:-13px; border-radius:50%;
   border:2px solid rgba(255,255,255,.1); border-top-color:var(--accent);
-  opacity:0; animation:novvaFade .3s var(--ease) .3s forwards, spin .8s linear infinite;
+  animation:spin .8s linear infinite;
 }
 
-/* Páginas/abas: aparição gradual dos primeiros blocos */
-@keyframes novvaRise{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
-.view.active > :nth-child(-n+5){animation:novvaRise .32s var(--ease) backwards;}
-.view.active > :nth-child(2){animation-delay:.04s;}
-.view.active > :nth-child(3){animation-delay:.08s;}
-.view.active > :nth-child(4){animation-delay:.12s;}
-.view.active > :nth-child(5){animation-delay:.16s;}
-#panel-adjust:not(.hidden), #panel-upscale:not(.hidden){animation:novvaFade .25s var(--ease) backwards;}
-
-/* Modais: entrada com fade + leve escala; ícone de sucesso com pop suave */
-.proc-modal{opacity:0; transform:scale(.94) translateY(8px); transition:transform .3s var(--ease), opacity .3s var(--ease);}
-.modal-backdrop.show .proc-modal{opacity:1; transform:scale(1) translateY(0);}
-@keyframes novvaPop{0%{opacity:0; transform:scale(.6);} 60%{opacity:1; transform:scale(1.06);} 100%{opacity:1; transform:scale(1);}}
-.modal-backdrop.show .result-icon{animation:novvaPop .4s var(--ease) .1s backwards;}
-
-/* Menu lateral: itens entram em cascata curta; hover/toque suaves */
-@keyframes novvaSlide{from{opacity:0; transform:translateX(10px);} to{opacity:1; transform:translateX(0);}}
-.menu-item{transition:background .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);}
-.menu-item:active{transform:scale(.98);}
-.side-panel.show .menu-item{animation:novvaSlide .3s var(--ease) backwards;}
-.side-panel.show .menu-item:nth-of-type(1){animation-delay:.08s;}
-.side-panel.show .menu-item:nth-of-type(2){animation-delay:.11s;}
-.side-panel.show .menu-item:nth-of-type(3){animation-delay:.14s;}
-.side-panel.show .menu-item:nth-of-type(4){animation-delay:.17s;}
-.side-panel.show .menu-item:nth-of-type(5){animation-delay:.2s;}
-.side-panel.show .menu-item:nth-of-type(6){animation-delay:.23s;}
-.side-panel.show .menu-item:nth-of-type(7){animation-delay:.26s;}
-.side-panel.show .menu-item:nth-of-type(8){animation-delay:.29s;}
-
-/* Botões: toque com escala leve e brilho suave no botão principal */
-.btn{transition:transform .2s var(--ease), filter .2s var(--ease), background .2s var(--ease), box-shadow .25s var(--ease), opacity .25s var(--ease);}
-.btn-primary:active{box-shadow:0 4px 12px -6px var(--accent-glow);}
-@media (hover:hover){.btn-primary:hover{box-shadow:0 14px 30px -10px var(--accent-glow);}}
-.icon-btn, .opt-btn, .fmt-btn, .tb-btn{transition:background .2s var(--ease), border-color .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);}
-.opt-btn:active, .fmt-btn:active, .tb-btn:active{transform:scale(.97);}
-.nav-item .nav-fab{transition:transform .25s var(--ease), box-shadow .25s var(--ease);}
-.nav-item:active .nav-fab{transform:scale(.94);}
+.view.active{animation:novva-in .25s ease-out both;}
+.modal-backdrop.show .proc-modal{animation:novva-in .25s ease-out;}
+.side-panel.show .menu-item{animation:novva-in .25s ease-out backwards;}
+.side-panel.show .menu-item:nth-of-type(2){animation-delay:0.03s;}
+.side-panel.show .menu-item:nth-of-type(3){animation-delay:0.06s;}
+.side-panel.show .menu-item:nth-of-type(4){animation-delay:0.09s;}
+.side-panel.show .menu-item:nth-of-type(5){animation-delay:0.12s;}
+.side-panel.show .menu-item:nth-of-type(6){animation-delay:0.15s;}
+.side-panel.show .menu-item:nth-of-type(7){animation-delay:0.18s;}
+.side-panel.show .menu-item:nth-of-type(8){animation-delay:0.21s;}
 
 /* Botão "Política de Privacidade Oficial" (cápsula com borda vermelha e glow sutil) */
 .privacy-web-btn{
@@ -748,13 +720,15 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
 @media (hover:hover){.privacy-web-btn:hover{border-color:var(--accent); background:rgba(255,17,51,.1); box-shadow:0 0 20px -2px var(--accent-glow);}}
 .privacy-web-btn:active{transform:scale(.97); opacity:.85; border-color:var(--accent); box-shadow:0 0 16px -2px var(--accent-glow);}
 
-/* Acessibilidade: sem cascata para quem prefere menos movimento */
+/* Cabeçalho e barra inferior: nenhuma animação de entrada */
+.app-header, .bottom-nav{animation:none !important;}
+
 @media (prefers-reduced-motion: reduce){
-  .view.active > *, .side-panel.show .menu-item, #panel-adjust, #panel-upscale, .modal-backdrop.show .result-icon{animation:none !important;}
+  .view.active, .modal-backdrop.show .proc-modal, .side-panel.show .menu-item{animation:none !important;}
 }
 </style>
 </head>
-<body>
+<body translate="no" class="notranslate">
 
 <!-- Filtro SVG oculto usado pelo ajuste "Nitidez" do vídeo. Uma convolução
      no compositor é muito mais barata do que processar pixel a pixel via JS,
@@ -817,7 +791,7 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
         </div>
 
         <div class="section-label">Como funciona</div>
-        <div class="tip-card"><div class="num">1</div><div><h4>Selecione</h4><p>Escolha uma imagem, um vídeo de até 15 segundos ou várias fotos para colagem.</p></div></div>
+        <div class="tip-card"><div class="num">1</div><div><h4>Selecione</h4><p>Escolha uma imagem, um vídeo de até 20 segundos ou várias fotos para colagem.</p></div></div>
         <div class="tip-card"><div class="num">2</div><div><h4>Melhore e ajuste</h4><p>Aumente a resolução e ajuste brilho, contraste, saturação e nitidez.</p></div></div>
         <div class="tip-card"><div class="num">3</div><div><h4>Compare e exporte</h4><p>Veja o antes e depois lado a lado e exporte no formato que precisar.</p></div></div>
 
@@ -834,7 +808,7 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
         <div class="dropzone" id="dropzone">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
           <h3>Arraste ou selecione um arquivo</h3>
-          <p>JPG, PNG, WEBP ou vídeos MP4 de até 15 segundos</p>
+          <p>JPG, PNG, WEBP ou vídeos MP4 de até 20 segundos</p>
           <button class="btn btn-primary" id="btn-select-file-2">Selecionar arquivo</button>
         </div>
 
@@ -887,8 +861,7 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
         <!-- Upscale panel -->
         <div class="panel hidden" id="panel-upscale">
           <div class="panel-title">Upscale</div>
-          <div class="opt-grid">
-            <button class="opt-btn active" data-upscale="1">Original<small id="dim-original">—</small></button>
+          <div class="opt-grid" style="grid-template-columns:repeat(2,1fr);">
             <button class="opt-btn" data-upscale="2">2K<small>até 2560px</small></button>
             <button class="opt-btn" data-upscale="4">4K<small>3840×2160</small></button>
           </div>
@@ -913,10 +886,24 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
 
         <div class="editor-stage" id="video-stage">
           <video id="video-preview" playsinline muted loop controls style="width:100%;height:100%;object-fit:contain;"></video>
+          <div class="compare-box hidden" id="vid-compare-box">
+            <div class="layer before-layer"><canvas id="vcmp-before-canvas"></canvas></div>
+            <div class="layer after-layer"><canvas id="vcmp-after-canvas"></canvas></div>
+            <span class="compare-tag before-tag">ANTES</span>
+            <span class="compare-tag after-tag">DEPOIS</span>
+            <div class="compare-divider" id="vid-compare-divider">
+              <div class="handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4"/></svg></div>
+            </div>
+          </div>
         </div>
         <div class="meta-row">
           <span class="meta-pill" id="video-duration-pill">Duração: —</span>
           <span class="meta-pill" id="video-res-pill">Resolução: —</span>
+        </div>
+
+        <div class="editor-toolbar">
+          <button class="tb-btn active" data-vtool="adjust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Ajustes</button>
+          <button class="tb-btn" data-vtool="compare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="8" height="16" rx="1.5"/><rect x="13" y="4" width="8" height="16" rx="1.5"/></svg>Comparar</button>
         </div>
 
         <div class="panel">
@@ -930,8 +917,9 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
 
         <div class="panel">
           <div class="panel-title">Upscale</div>
-          <div class="opt-grid" style="grid-template-columns:1fr;">
-            <button class="opt-btn active" data-vupscale="1">Original<small>—</small></button>
+          <div class="opt-grid" style="grid-template-columns:repeat(2,1fr);">
+            <button class="opt-btn active" data-vpreset="boa">Boa<small>até 1920px</small></button>
+            <button class="opt-btn" data-vpreset="medio">Médio<small>até 1280px</small></button>
           </div>
         </div>
 
@@ -941,7 +929,8 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
         </div>
 
         <div class="editor-actions">
-          <button class="btn btn-primary btn-block" id="btn-video-export">Exportar vídeo</button>
+          <button class="btn btn-secondary" id="btn-video-compare-toggle">Comparar</button>
+          <button class="btn btn-primary" id="btn-video-export">Exportar vídeo</button>
         </div>
         <div style="height:20px;"></div>
       </section>
@@ -1063,7 +1052,7 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
           <button class="back-btn" data-back="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
           <h2>Como funciona</h2>
         </div>
-        <div class="tip-card"><div class="num">1</div><div><h4>Selecione</h4><p>Escolha uma imagem, um vídeo de até 15 segundos ou várias fotos para colagem.</p></div></div>
+        <div class="tip-card"><div class="num">1</div><div><h4>Selecione</h4><p>Escolha uma imagem, um vídeo de até 20 segundos ou várias fotos para colagem.</p></div></div>
         <div class="tip-card"><div class="num">2</div><div><h4>Melhore</h4><p>Aplique upscale local com Canvas ou prepare-se para conectar um modelo de IA.</p></div></div>
         <div class="tip-card"><div class="num">3</div><div><h4>Ajuste</h4><p>Brilho, contraste, saturação, iluminação e nitidez em tempo real.</p></div></div>
         <div class="tip-card"><div class="num">4</div><div><h4>Compare</h4><p>Arraste o divisor para ver antes e depois lado a lado.</p></div></div>
@@ -1078,14 +1067,9 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
           <h2>Ajuda</h2>
         </div>
         <div class="prose">
-          <h3>Meu vídeo não pode ser selecionado</h3>
-          <p>O NOVVA IA aceita vídeos de até 15 segundos. Corte o vídeo antes de enviar ou escolha outro arquivo.</p>
-          <h3>O upscale 4K não parece "de IA"</h3>
-          <p>Sem um modelo de super-resolução conectado, o NOVVA IA usa um upscale local de alta qualidade via Canvas. A arquitetura já está preparada para conectar um modelo real de IA por backend.</p>
-          <h3>A exportação em MP4 não está disponível</h3>
-          <p>Alguns navegadores não conseguem gerar MP4 nativamente. Nesses casos, o NOVVA IA exporta em WebM, mantendo qualidade e sincronismo de áudio.</p>
-          <h3>Meus projetos somem se eu limpar os dados do navegador</h3>
-          <p>O histórico é salvo localmente neste dispositivo (IndexedDB). Limpar dados do navegador remove esses registros.</p>
+          <h3>Fale com o suporte</h3>
+          <p>Se você encontrou algum problema, tem dúvidas sobre o uso do aplicativo ou quer enviar uma sugestão, entre em contato com o suporte oficial da NOVVA IA.</p>
+          <p>Envie sua mensagem para <a href="mailto:suportetakka@gmail.com" style="color:var(--accent); font-weight:700; text-decoration:none;">suportetakka@gmail.com</a> descrevendo o que aconteceu. Se possível, informe o modelo do aparelho e o navegador que você usa, para que possamos ajudar mais rápido.</p>
         </div>
         <div style="height:20px;"></div>
       </section>
@@ -1230,7 +1214,7 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
         <svg viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke="#232326" stroke-width="4"/><circle cx="25" cy="25" r="20" fill="none" stroke="#FF1133" stroke-width="4" stroke-linecap="round" stroke-dasharray="90 126"/></svg>
       </div>
       <h3>Processando...</h3>
-      <p class="sub">A NOVVA IA está preparando seu arquivo.</p>
+      <p class="sub">A Novva IA está preparando seu arquivo.</p>
       <div class="proc-step" id="proc-step-label">Preparando arquivo</div>
       <div class="proc-bar"><div class="fill"></div></div>
     </div>
@@ -1321,7 +1305,7 @@ const State = {
   video: {
     file:null, url:null, duration:0, width:0, height:0,
     adjust:{brightness:0, contrast:0, saturation:0, exposure:0, sharpness:0},
-    upscaleFactor:1,
+    preset:'boa',
     historyId:null
   },
   collage: {
@@ -1561,9 +1545,9 @@ const DB = {
    HISTORY / PROJECTS UI
    --------------------------------------------------------------------- */
 const History = {
-  async add({name, type, resolution, thumbBlob}){
+  async add({name, type, resolution, thumbBlob, media, state}){
     const thumbUrl = URL.createObjectURL(thumbBlob);
-    const project = { id:uid(), name, type, resolution, thumbBlob, createdAt:Date.now() };
+    const project = { id:uid(), name, type, resolution, thumbBlob, media, state, createdAt:Date.now() };
     await DB.add(project);
     URL.revokeObjectURL(thumbUrl);
     this.render();
@@ -1572,7 +1556,7 @@ const History = {
   // Creates a project on first save, or silently updates the same entry on
   // subsequent saves (e.g. when leaving a project mid-edit) instead of
   // creating duplicates. Returns the project id to keep tracking it.
-  async upsert(id, {name, type, resolution, thumbBlob}){
+  async upsert(id, {name, type, resolution, thumbBlob, media, state}){
     let createdAt = Date.now();
     if(id){
       try{
@@ -1586,11 +1570,41 @@ const History = {
         if(existing) createdAt = existing.createdAt;
       }catch(e){ /* fall back to a fresh entry */ }
     }
-    const project = { id: id || uid(), name, type, resolution, thumbBlob, createdAt };
+    const project = { id: id || uid(), name, type, resolution, thumbBlob, media, state, createdAt };
     await DB.add(project);
     this.render();
     this.renderRecent();
     return project.id;
+  },
+  // Mídia de origem + estado dos ajustes: o projeto reabre exatamente de onde o usuário parou
+  capture(type){
+    if(type === 'image') return { media: State.image.file, state: { adjust: {...State.image.adjust}, upscaleFactor: State.image.upscaleFactor } };
+    if(type === 'video') return { media: State.video.file, state: { adjust: {...State.video.adjust}, preset: State.video.preset } };
+    const c = State.collage;
+    return {
+      media: c.images.map(i=> ({file:i.file, name:i.name, offX:i.offX||0, offY:i.offY||0})),
+      state: { layout:c.layout, ratio:c.ratio, gap:c.gap, radius:c.radius, bg:c.bg }
+    };
+  },
+  async open(p){
+    // Projetos antigos (criados antes de a mídia original passar a ser salva) não podem ser reabertos:
+    // a mídia é validada antes de tocar em qualquer estado e, se faltar, só avisa — sem navegar nem travar.
+    const isBlob = (b)=> typeof Blob !== 'undefined' && b instanceof Blob;
+    const media = (p.type === 'image' || p.type === 'video')
+      ? (isBlob(p.media) ? p.media : null)
+      : (Array.isArray(p.media) ? p.media.filter(m=> m && isBlob(m.file)) : []);
+    if(!media || (Array.isArray(media) && !media.length)){
+      Toast.show('Projeto antigo: a mídia original não foi salva e ele não pode ser reaberto.', 'error');
+      return;
+    }
+    try{
+      if(p.type === 'image') await ImageEditor.load(media, {...p.state, historyId:p.id});
+      else if(p.type === 'video') await VideoEditor.load(media, {...p.state, historyId:p.id});
+      else await Collage.restore({...p, media});
+    }catch(err){
+      console.error(err);
+      Toast.show('Não foi possível reabrir este projeto.', 'error');
+    }
   },
   async render(){
     const list = $('#projects-list');
@@ -1638,9 +1652,7 @@ const History = {
         this.renderRecent();
       }
     });
-    el.addEventListener('click', ()=>{
-      Toast.show('Abrindo pré-visualização do projeto.');
-    });
+    el.addEventListener('click', ()=> this.open(p));
     return el;
   }
 };
@@ -1767,7 +1779,7 @@ const ImageEditor = {
       inp.addEventListener('input', ()=> this.onAdjustInput(inp));
     });
     $('#btn-reset-adjust').addEventListener('click', ()=> this.resetAdjust());
-    $$('.tb-btn').forEach(btn=> btn.addEventListener('click', ()=> this.setTool(btn.dataset.tool)));
+    $$('#view-image-editor .tb-btn').forEach(btn=> btn.addEventListener('click', ()=> this.setTool(btn.dataset.tool)));
     $$('#panel-upscale [data-upscale]').forEach(btn=>{
       btn.addEventListener('click', ()=> this.setUpscale(btn));
     });
@@ -1776,7 +1788,7 @@ const ImageEditor = {
     const divider = $('#compare-divider');
     this.bindDivider(divider);
   },
-  async load(file){
+  async load(file, saved){
     const img = new Image();
     const url = URL.createObjectURL(file);
     await new Promise((resolve, reject)=>{
@@ -1790,6 +1802,11 @@ const ImageEditor = {
     State.image.upscaleFactor = 1;
     State.image.compareOn = false;
     State.image.historyId = null;
+    if(saved){
+      Object.assign(State.image.adjust, saved.adjust || {});
+      State.image.upscaleFactor = saved.upscaleFactor || 1;
+      State.image.historyId = saved.historyId || null;
+    }
     ['cmp-before-canvas','cmp-after-canvas'].forEach(id=>{
       const c = document.getElementById(id);
       if(c){ c.width = 0; c.height = 0; }
@@ -1805,10 +1822,12 @@ const ImageEditor = {
     this.baseCanvas = base;
 
     URL.revokeObjectURL(url);
-    $$('#panel-adjust input[type=range]').forEach(inp=>{ inp.value = 0; });
-    $$('#panel-adjust .val').forEach(v=> v.textContent='0');
-    $('#dim-original').textContent = img.naturalWidth+'×'+img.naturalHeight;
-    $$('#panel-upscale [data-upscale]').forEach(b=> b.classList.toggle('active', b.dataset.upscale==='1'));
+    $$('#panel-adjust input[type=range]').forEach(inp=>{ inp.value = State.image.adjust[inp.id.replace('s-','')] || 0; });
+    $$('#panel-adjust .val').forEach(v=>{ v.textContent = State.image.adjust[v.id.replace('v-','')] || 0; });
+    $$('#panel-upscale [data-upscale]').forEach(b=> b.classList.toggle('active', Number(b.dataset.upscale)===State.image.upscaleFactor));
+    if(saved){
+      $('#upscale-badge').innerHTML = '<span class="dot"></span>' + (State.image.upscaleFactor===1 ? 'Sem upscale — resolução original' : 'Upscale local (Canvas) — proporção preservada');
+    }
     this.setTool('adjust');
     this.setCompareVisible(false);
     this.render();
@@ -1835,16 +1854,18 @@ const ImageEditor = {
   },
   setTool(tool){
     State.image.activeTool = tool;
-    $$('.tb-btn').forEach(b=> b.classList.toggle('active', b.dataset.tool===tool));
+    $$('#view-image-editor .tb-btn').forEach(b=> b.classList.toggle('active', b.dataset.tool===tool));
     $('#panel-adjust').classList.toggle('hidden', tool!=='adjust');
     $('#panel-upscale').classList.toggle('hidden', tool!=='upscale');
     if(tool==='compare'){ this.setCompareVisible(true); this.renderCompare(); }
     else { this.setCompareVisible(State.image.compareOn); }
   },
   setUpscale(btn){
+    // Sem a opção "Original": tocar de novo na opção ativa desfaz o upscale (volta ao tamanho original)
+    const wasActive = btn.classList.contains('active');
     $$('#panel-upscale [data-upscale]').forEach(b=> b.classList.remove('active'));
-    btn.classList.add('active');
-    State.image.upscaleFactor = Number(btn.dataset.upscale);
+    if(!wasActive) btn.classList.add('active');
+    State.image.upscaleFactor = wasActive ? 1 : Number(btn.dataset.upscale);
     const badge = $('#upscale-badge');
     if(State.image.upscaleFactor === 1){
       badge.innerHTML = '<span class="dot"></span>Sem upscale — resolução original';
@@ -1883,8 +1904,8 @@ const ImageEditor = {
     after.width = adjusted.width; after.height = adjusted.height;
     after.getContext('2d').drawImage(adjusted, 0, 0);
   },
-  bindDivider(divider){
-    const box = $('#img-compare-box');
+  bindDivider(divider, box){
+    box = box || $('#img-compare-box');
     let dragging = false;
     const setPos = (clientX)=>{
       const rect = box.getBoundingClientRect();
@@ -1943,7 +1964,8 @@ const ImageEditor = {
         name: State.image.file.name || 'novva-ia-imagem.png',
         type: 'image',
         resolution: dims.w+'×'+dims.h,
-        thumbBlob
+        thumbBlob,
+        ...History.capture('image')
       });
     }catch(e){ console.error(e); }
   }
@@ -2119,7 +2141,7 @@ const Collage = {
         } else {
           await loaded;
         }
-        State.collage.images.push({img, name:f.name, url, uid: ++this._uidSeq, offX:0, offY:0});
+        State.collage.images.push({img, name:f.name, url, uid: ++this._uidSeq, offX:0, offY:0, file:f});
       }catch(err){
         failedCount++;
         URL.revokeObjectURL(url);
@@ -2134,6 +2156,37 @@ const Collage = {
     if(failedCount > 0){
       Toast.show(failedCount>1 ? `${failedCount} imagens não puderam ser carregadas.` : '1 imagem não pôde ser carregada.', 'error');
     }
+  },
+  // Reabre um projeto salvo: recria as imagens e restaura layout, proporção, espaçamento, arredondamento e fundo
+  async restore(p){
+    State.collage.images.forEach(i=>{ try{ URL.revokeObjectURL(i.url); }catch(e){} });
+    State.collage.images = [];
+    for(const m of p.media){
+      const url = URL.createObjectURL(m.file);
+      const img = new Image();
+      const loaded = new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; });
+      img.src = url;
+      try{
+        if(img.decode){ try{ await img.decode(); } catch(e){ await loaded; } } else { await loaded; }
+      }catch(e){ URL.revokeObjectURL(url); continue; }
+      State.collage.images.push({img, name:m.name, url, uid: ++this._uidSeq, offX:m.offX||0, offY:m.offY||0, file:m.file});
+    }
+    Object.assign(State.collage, p.state || {}, {historyId:p.id});
+    $('#s-gap').value = State.collage.gap; $('#v-gap').textContent = State.collage.gap;
+    $('#s-radius').value = State.collage.radius; $('#v-radius').textContent = State.collage.radius;
+    $$('[data-collage-bg]').forEach(b=> b.classList.toggle('active', b.dataset.collageBg === State.collage.bg));
+    this.buildRatioOptions();
+    this.renderThumbs();
+    this.render();
+    Nav.go('collage');
+  },
+  // Novo projeto de colagem: esvazia imagens e miniaturas do projeto anterior e solta o vínculo com o histórico dele
+  reset(){
+    State.collage.images.forEach(i=>{ try{ URL.revokeObjectURL(i.url); }catch(e){} });
+    State.collage.images = [];
+    State.collage.historyId = null;
+    this.renderThumbs();
+    this.render();
   },
   renderThumbs(){
     const wrap = $('#collage-thumbs');
@@ -2340,7 +2393,8 @@ const Collage = {
         name: 'novva-ia-colagem.png',
         type: 'collage',
         resolution: canvas.width+'×'+canvas.height,
-        thumbBlob
+        thumbBlob,
+        ...History.capture('collage')
       });
     }catch(e){ console.error(e); }
   }
@@ -2355,18 +2409,24 @@ const VideoEditor = {
       inp.addEventListener('input', ()=> this.onAdjustInput(inp));
     });
     $('#btn-reset-video-adjust').addEventListener('click', ()=> this.resetAdjust());
-    $$('[data-vupscale]').forEach(btn=>{
+    $$('#view-video-editor [data-vpreset]').forEach(btn=>{
+      btn.addEventListener('click', ()=> this.setPreset(btn.dataset.vpreset));
+    });
+    $('#btn-video-compare-toggle').addEventListener('click', ()=> this.toggleCompare());
+    // Barra de ferramentas (Ajustes / Comparar), igual à do editor de imagens
+    $$('#view-video-editor .tb-btn').forEach(btn=>{
       btn.addEventListener('click', ()=>{
-        $$('[data-vupscale]').forEach(b=> b.classList.remove('active'));
-        btn.classList.add('active');
-        State.video.upscaleFactor = Number(btn.dataset.vupscale);
+        const wantCompare = btn.dataset.vtool === 'compare';
+        if(wantCompare !== this.compareOn) this.setCompare(wantCompare);
       });
     });
+    ImageEditor.bindDivider($('#vid-compare-divider'), $('#vid-compare-box'));
     $('#btn-video-export').addEventListener('click', ()=> Export.openSheet('video'));
   },
-  async load(file){
+  async load(file, saved){
     const url = URL.createObjectURL(file);
     const video = $('#video-preview');
+    const prev = {file:State.video.file, url:State.video.url};
     video.src = url;
     State.video.file = file;
     State.video.url = url;
@@ -2377,9 +2437,12 @@ const VideoEditor = {
     });
 
     const duration = video.duration;
-    if(duration > 15.5){
+    if(duration > 20){
+      // limite rígido: o arquivo recusado não substitui o vídeo que já estava carregado
       Modal.confirmVideoTooLong = true;
-      $('#video-duration-pill').textContent = 'Duração: ' + formatDuration(duration);
+      State.video.file = prev.file; State.video.url = prev.url;
+      if(prev.url) video.src = prev.url; else { video.removeAttribute('src'); video.load(); }
+      URL.revokeObjectURL(url);
       this.showTooLong();
       return false;
     }
@@ -2388,12 +2451,18 @@ const VideoEditor = {
     State.video.width = video.videoWidth;
     State.video.height = video.videoHeight;
     State.video.adjust = {brightness:0, contrast:0, saturation:0, exposure:0, sharpness:0};
-    State.video.upscaleFactor = 1;
+    State.video.preset = 'boa';
     State.video.historyId = null;
+    if(saved){
+      Object.assign(State.video.adjust, saved.adjust || {});
+      State.video.preset = saved.preset === 'medio' ? 'medio' : 'boa';
+      State.video.historyId = saved.historyId || null;
+    }
 
-    $$('#view-video-editor input[type=range]').forEach(inp=> inp.value = 0);
-    $$('#view-video-editor .val').forEach(v=> v.textContent = '0');
-    $$('[data-vupscale]').forEach(b=> b.classList.toggle('active', b.dataset.vupscale==='1'));
+    $$('#view-video-editor input[type=range]').forEach(inp=> inp.value = State.video.adjust[inp.id.replace('vs-','')] || 0);
+    $$('#view-video-editor .val').forEach(v=> v.textContent = State.video.adjust[v.id.replace('vv-','')] || 0);
+    this.setPreset(State.video.preset);
+    this.setCompare(false);
     $('#video-duration-pill').textContent = 'Duração: ' + formatDuration(duration);
     $('#video-res-pill').textContent = 'Resolução: ' + video.videoWidth + '×' + video.videoHeight;
     this.applyCssFilter();
@@ -2401,10 +2470,10 @@ const VideoEditor = {
     return true;
   },
   showTooLong(){
-    Toast.show('O NOVVA IA aceita vídeos de até 15 segundos.', 'error');
+    Toast.show('Vídeo acima de 20 segundos. Escolha um arquivo de até 20 segundos.', 'error');
     const modal = $('#confirm-modal');
     $('#confirm-title').textContent = 'Vídeo muito longo';
-    $('#confirm-sub').textContent = 'O NOVVA IA aceita vídeos de até 15 segundos.';
+    $('#confirm-sub').textContent = 'O Novva IA aceita vídeos de até 20 segundos. Escolha um arquivo válido.';
     $('#confirm-yes').textContent = 'Escolher outro vídeo';
     $('#confirm-no').textContent = 'Cancelar';
     Modal.show('confirm-modal');
@@ -2425,13 +2494,89 @@ const VideoEditor = {
     State.video.adjust[key] = val;
     $('#vv-'+key).textContent = val;
     this.applyCssFilter();
+    if(this.compareOn) this.scheduleCompare();
   },
   resetAdjust(){
     State.video.adjust = {brightness:0, contrast:0, saturation:0, exposure:0, sharpness:0};
     $$('#view-video-editor input[type=range]').forEach(inp=> inp.value = 0);
     $$('#view-video-editor .val').forEach(v=> v.textContent = '0');
     this.applyCssFilter();
+    if(this.compareOn) this.scheduleCompare();
     Toast.show('Ajustes redefinidos.');
+  },
+  PRESET_MAX:{boa:1920, medio:1280},
+  setPreset(p){
+    State.video.preset = p === 'medio' ? 'medio' : 'boa';
+    $$('[data-vpreset]').forEach(b=> b.classList.toggle('active', b.dataset.vpreset === State.video.preset));
+  },
+  // ----- Modo Comparar: pausa, oculta o <video> (display:none) e mostra um quadro congelado antes/depois -----
+  compareOn:false,
+  toggleCompare(){ this.setCompare(!this.compareOn); },
+  setCompare(on){
+    const video = $('#video-preview');
+    const before = $('#vcmp-before-canvas'), after = $('#vcmp-after-canvas');
+    if(on && !video.videoWidth){ Toast.show('Carregue um vídeo para comparar.', 'error'); return; }
+    this.compareOn = !!on;
+    if(this.compareOn){
+      video.pause();
+      this.renderCompare(true);
+      video.style.display = 'none';
+      $('#vid-compare-divider').style.left = '50%';
+      $('#vid-compare-box .after-layer').style.clipPath = 'inset(0 0 0 50%)';
+    } else {
+      video.style.display = '';
+      before.width = before.height = after.width = after.height = 0; // libera a memória dos quadros
+    }
+    $('#vid-compare-box').classList.toggle('hidden', !this.compareOn);
+    $('#btn-video-compare-toggle').textContent = this.compareOn ? 'Voltar ao vídeo' : 'Comparar';
+    $$('#view-video-editor .tb-btn').forEach(b=> b.classList.toggle('active', (b.dataset.vtool === 'compare') === this.compareOn));
+  },
+  scheduleCompare(){
+    if(this._cmpRaf) return;
+    this._cmpRaf = requestAnimationFrame(()=>{ this._cmpRaf = null; this.renderCompare(); });
+  },
+  // capture=true congela o quadro atual (reduzido a no máx. 960px); depois disso o "antes" é só reaproveitado
+  renderCompare(capture){
+    const before = $('#vcmp-before-canvas'), after = $('#vcmp-after-canvas');
+    if(capture){
+      const video = $('#video-preview');
+      const k = Math.min(1, 960 / Math.max(video.videoWidth, video.videoHeight));
+      before.width = after.width = Math.round(video.videoWidth*k);
+      before.height = after.height = Math.round(video.videoHeight*k);
+      before.getContext('2d').drawImage(video, 0, 0, before.width, before.height);
+    }
+    const w = before.width, h = before.height;
+    if(!w || !h) return;
+    const actx = after.getContext('2d', {willReadFrequently:true});
+    actx.clearRect(0, 0, w, h);
+    actx.filter = this.exportFilterString();
+    actx.drawImage(before, 0, 0);
+    actx.filter = 'none';
+    const amt = this.unsharpAmount();
+    if(amt > 0) this.unsharpMask(actx, w, h, amt);
+  },
+  // ----- Nitidez da exportação: Unsharp Mask leve de passe único (Canvas), força máx. ~28% -----
+  UNSHARP_MAX:0.28,
+  unsharpAmount(){
+    return Math.min(1, (State.video.adjust.sharpness || 0) / 100) * this.UNSHARP_MAX;
+  },
+  unsharpMask(ctx, w, h, amount){
+    const img = ctx.getImageData(0, 0, w, h);
+    const d = img.data;
+    if(!this._usSrc || this._usSrc.length !== d.length) this._usSrc = new Uint8ClampedArray(d.length);
+    const s = this._usSrc;
+    s.set(d);
+    const row = w * 4;
+    for(let y = 1; y < h - 1; y++){
+      const end = y*row + row - 4;
+      for(let i = y*row + 4; i < end; i += 4){
+        for(let k = i; k < i + 3; k++){
+          const blur = (s[k-4] + s[k+4] + s[k-row] + s[k+row] + 4*s[k]) >> 3; // desfoque em cruz (pesos 1-1-1-1-4)/8
+          d[k] = s[k] + amount * (s[k] - blur);
+        }
+      }
+    }
+    ctx.putImageData(img, 0, 0);
   },
   // Atualiza o kernel do filtro SVG (#video-sharpen-filter) de acordo com a
   // intensidade escolhida. amount vai de 0 (sem efeito, kernel = identidade)
@@ -2493,14 +2638,11 @@ const VideoEditor = {
   // "resolution" label all agree on the exact same numbers.
   targetDims(){
     const w = State.video.width, h = State.video.height;
-    const factor = State.video.upscaleFactor === 2 ? Math.min(2560/Math.max(w,h), 2) : 1;
-    const MAX_DIM = 1920;
-    let outW = Math.round(w*factor), outH = Math.round(h*factor);
-    if(Math.max(outW,outH) > MAX_DIM){
-      const shrink = MAX_DIM / Math.max(outW,outH);
-      outW = Math.round(outW*shrink); outH = Math.round(outH*shrink);
-    }
-    return {w: outW, h: outH};
+    const cap = this.PRESET_MAX[State.video.preset] || this.PRESET_MAX.boa; // maior lado: Boa 1920 / Médio 1280
+    const long = Math.max(w, h);
+    if(!long || long <= cap) return {w, h};
+    const k = cap / long;
+    return {w: Math.round(w*k/2)*2, h: Math.round(h*k/2)*2};
   },
   // Re-encodes the video with filters applied using canvas + MediaRecorder.
   //
@@ -2563,6 +2705,9 @@ const VideoEditor = {
   // costly SVG convolution during capture (brightness/contrast/saturate stay
   // on, they're cheap) while the live preview keeps full sharpening since
   // that only costs a GPU-composited CSS filter, never per-frame software work.
+  // v9: gravação em tempo real com cadência FIXA de 24 FPS (setTimeout com correção de deriva), sem seek
+  // e sem mexer no playbackRate. A nitidez é o Unsharp Mask leve em Canvas (unsharpMask, ~28% no máx.),
+  // aplicado só no quadro de saída; o filtro SVG feConvolveMatrix não participa da exportação.
   async buildFinalBlob(setStep){
     if(!('MediaRecorder' in window)){
       throw new Error('MediaRecorder não suportado neste navegador.');
@@ -2648,10 +2793,12 @@ const VideoEditor = {
 
     const canvas = document.createElement('canvas');
     canvas.width = outW; canvas.height = outH;
-    const ctx = canvas.getContext('2d');
+    const sharpAmount = this.unsharpAmount();
+    const ctx = canvas.getContext('2d', {willReadFrequently: sharpAmount > 0});
     const drawFilteredFrame = ()=>{
       srcCtx.drawImage(frameVideo, 0, 0, nativeW, nativeH);
       ctx.drawImage(srcCanvas, 0, 0, outW, outH);
+      if(sharpAmount > 0) this.unsharpMask(ctx, outW, outH, sharpAmount);
     };
     drawFilteredFrame(); // seed a first frame before recording starts
 
@@ -2692,6 +2839,7 @@ const VideoEditor = {
       if(audioEl){ try{ audioEl.pause(); audioEl.removeAttribute('src'); audioEl.load(); audioEl.remove(); }catch(e){} }
       canvas.width = 0; canvas.height = 0;
       srcCanvas.width = 0; srcCanvas.height = 0;
+      this._usSrc = null;
       if(wakeLock){ try{ wakeLock.release(); }catch(e){} wakeLock = null; }
     };
 
@@ -2722,22 +2870,17 @@ const VideoEditor = {
     recorder.start(250);
 
     let drawFailed = null;
-    let raf = null;
-    let rvfcHandle = null;
-    // requestVideoFrameCallback fires once per actual decoded video frame
-    // (media-pipeline driven), not per display refresh, so it keeps tracking
-    // real decode progress even if the display's refresh rate/visibility
-    // changes mid-export. Falls back to requestAnimationFrame where absent.
-    const hasRVFC = typeof frameVideo.requestVideoFrameCallback === 'function';
+    // Cadência fixa de 24 FPS: um quadro a cada 1000/24 ms, em tempo real. Se um quadro atrasar, o próximo
+    // é agendado a partir de "agora" (nunca em rajada), então não há descarte em cascata nem áudio fora de sincronia.
+    const frameMs = 1000 / fps;
+    let drawTimer = null, drawing = true, nextAt = performance.now();
     const drawFrame = ()=>{
+      if(!drawing) return;
       try{ drawFilteredFrame(); }
       catch(e){ drawFailed = e; return; }
-      if(frameVideo.ended || frameVideo.paused || drawFailed) return;
-      if(hasRVFC){
-        rvfcHandle = frameVideo.requestVideoFrameCallback(drawFrame);
-      } else {
-        raf = requestAnimationFrame(drawFrame);
-      }
+      if(frameVideo.ended) return;
+      nextAt = Math.max(nextAt + frameMs, performance.now());
+      drawTimer = setTimeout(drawFrame, Math.max(0, nextAt - performance.now()));
     };
     drawFrame();
 
@@ -2770,8 +2913,7 @@ const VideoEditor = {
         }
       }, 100);
     });
-    if(raf) cancelAnimationFrame(raf);
-    if(rvfcHandle && hasRVFC){ try{ frameVideo.cancelVideoFrameCallback(rvfcHandle); }catch(e){} }
+    drawing = false; if(drawTimer) clearTimeout(drawTimer);
     if(audioEl){ try{ audioEl.pause(); }catch(e){} }
 
     try{ recorder.stop(); }catch(e){}
@@ -2803,7 +2945,8 @@ const VideoEditor = {
         name: State.video.file.name || 'novva-ia-video.webm',
         type: 'video',
         resolution: w+'×'+h,
-        thumbBlob
+        thumbBlob,
+        ...History.capture('video')
       });
     }catch(e){ console.error(e); }
   }
@@ -2831,6 +2974,7 @@ const FileSelect = {
   pickSingle(kindHint){
     State.currentKindHint = kindHint;
     if(kindHint === 'collage'){
+      Collage.reset(); // nova colagem: começa sem as imagens e miniaturas da anterior
       Nav.go('collage');
       $('#file-input-multi').click();
       return;
@@ -2903,13 +3047,19 @@ const EXPORT_FORMATS = {
 const Export = {
   init(){
     $('#export-sheet-backdrop').addEventListener('click', ()=> this.closeSheet());
-    $$('#export-quality-row .opt-btn').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
+    $('#export-quality-row').addEventListener('click', (e)=>{
+      const btn = e.target.closest('.opt-btn');
+      if(!btn) return;
+      if(btn.dataset.vpreset){
+        VideoEditor.setPreset(btn.dataset.vpreset); // Boa / Médio (sincroniza o painel do editor)
+        const d = VideoEditor.targetDims();
+        $('#exp-resolution').textContent = d.w + ' × ' + d.h;
+      } else {
         $$('#export-quality-row .opt-btn').forEach(b=> b.classList.remove('active'));
         btn.classList.add('active');
         this.currentQuality = Number(btn.dataset.quality);
-        $('#exp-quality').textContent = btn.textContent.trim();
-      });
+      }
+      $('#exp-quality').textContent = btn.textContent.trim();
     });
     $('#btn-do-export').addEventListener('click', ()=> this.runExport());
     $('#btn-result-download').addEventListener('click', ()=> this.downloadResult());
@@ -2927,14 +3077,12 @@ const Export = {
     this.currentFormat = this.pickDefaultFormat(type);
     this.currentQuality = State.settings.quality;
 
-    // Vídeo: a qualidade "Máxima" causa travamentos, então não é oferecida.
-    const maxQualityBtn = $('#export-quality-row [data-quality="1"]');
-    if(type === 'video'){
-      maxQualityBtn.style.display = 'none';
-      if(this.currentQuality >= 1) this.currentQuality = 0.8;
-    } else {
-      maxQualityBtn.style.display = '';
-    }
+    // Vídeo: só duas opções — "Boa" (até 1920px, padrão) e "Médio" (até 1280px). Sem "Alta"/"Máxima".
+    const qRow = $('#export-quality-row');
+    if(this._qualityHtml === undefined) this._qualityHtml = qRow.innerHTML;
+    qRow.innerHTML = type === 'video'
+      ? '<button class="opt-btn" data-vpreset="boa">Boa</button><button class="opt-btn" data-vpreset="medio">Médio</button>'
+      : this._qualityHtml;
 
     const grid = $('#export-fmt-grid');
     grid.innerHTML = '';
@@ -2954,9 +3102,10 @@ const Export = {
 
     $('#export-quality-row').style.display = (this.currentFormat==='png'||this.currentFormat==='svg'||this.currentFormat==='pptx') ? 'none':'flex';
     $('#exp-format').textContent = this.currentFormat.toUpperCase();
-    $('#exp-quality').textContent = this.currentQuality>=1 ? 'Máxima' : this.currentQuality>=0.8 ? 'Alta':'Boa';
+    $('#exp-quality').textContent = type==='video' ? (State.video.preset==='medio' ? 'Médio' : 'Boa')
+      : (this.currentQuality>=1 ? 'Máxima' : this.currentQuality>=0.8 ? 'Alta':'Boa');
     $$('#export-quality-row .opt-btn').forEach(b=>{
-      b.classList.toggle('active', Number(b.dataset.quality)===this.currentQuality);
+      b.classList.toggle('active', type==='video' ? b.dataset.vpreset===State.video.preset : Number(b.dataset.quality)===this.currentQuality);
     });
 
     let resText = '—';
@@ -3105,7 +3254,8 @@ const Export = {
       name: filename,
       type,
       resolution,
-      thumbBlob
+      thumbBlob,
+      ...History.capture(type)
     });
     $('#result-sub').textContent = 'Seu arquivo foi exportado com sucesso.';
     Modal.show('result-modal');
@@ -3151,7 +3301,7 @@ const Export = {
       try{
         const file = new File([this.lastBlob], this.lastFilename, {type:this.lastBlob.type});
         if(navigator.canShare({files:[file]})){
-          await navigator.share({files:[file], title:'NOVVA IA'});
+          await navigator.share({files:[file], title:'Novva IA'});
           return;
         }
       }catch(e){ /* fall through to download */ }
