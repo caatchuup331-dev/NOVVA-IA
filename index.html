@@ -4,7 +4,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
-<meta name="theme-color" content="#FF1133">
+<meta name="theme-color" content="#000000">
   <script type="module" async>
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
@@ -34,7 +34,6 @@
 <title>Novva IA</title>
   <link rel="manifest" href="manifest.json">
 <meta name="description" content="NOVVA IA — Melhore, ajuste, aumente a resolução e exporte suas imagens e vídeos em poucos segundos.">
-<meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
@@ -397,6 +396,17 @@ img{max-width:100%; display:block;}
 .editor-stage canvas, .editor-stage video{max-width:100%; max-height:100%; display:block;}
 .editor-stage.compare-mode canvas.preview-canvas{display:none;}
 
+/* Prévias maiores (foto, vídeo e colagem): o palco ganha a proporção do conteúdo (definida por JS), ocupa a largura
+   total da tela (margens iguais ao padding do .container) e tem altura máx. ~60% da tela. Só muda a exibição. */
+#img-stage, #video-stage, #collage-stage{
+  width:calc(100% + 36px); margin-left:-18px; margin-right:-18px; /* largura explícita: com width:auto o max-height encolheria a largura */
+  border-radius:0; border-left:0; border-right:0;
+  max-height:60vh; max-height:60dvh;
+}
+#img-stage canvas, #video-stage canvas, #collage-stage canvas, #video-stage video{
+  width:100%; height:100%; object-fit:contain;
+}
+
 .compare-box{position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;}
 .compare-box .layer{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;}
 .compare-box canvas{max-width:100%; max-height:100%;}
@@ -418,6 +428,39 @@ img{max-width:100%; display:block;}
 }
 .compare-tag.before-tag{left:10px;}
 .compare-tag.after-tag{right:10px; background:rgba(255,17,51,.65);}
+
+/* Comparar em tela cheia (só foto): ícone de expandir + overlay próprio.
+   z-index 55: acima da barra inferior (50) e abaixo do menu lateral (60/61), toasts (80) e modais (90). */
+.cmp-expand{
+  position:absolute; right:10px; bottom:10px; z-index:3;
+  width:38px; height:38px; border-radius:50%; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.55); color:#fff; border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  touch-action:manipulation; transition:transform .12s var(--ease);
+}
+.cmp-expand:active{transform:scale(.95);}
+.cmp-expand svg{width:16px; height:16px;}
+.cmp-fs{
+  position:fixed; left:0; right:0; bottom:0; z-index:55;
+  top:calc(var(--header-h) + var(--safe-t));
+  display:none; background:#050505; touch-action:none;
+}
+.cmp-fs.show{display:block;}
+.cmp-fs-body{position:absolute; left:0; right:0; top:0; bottom:var(--safe-b);}
+.cmp-fs .compare-box canvas{width:100%; height:100%; object-fit:contain;}
+.cmp-fs .cmp-expand{display:none;}
+.cmp-fs-close{
+  position:absolute; right:12px; bottom:calc(12px + var(--safe-b)); z-index:4;
+  display:flex; align-items:center; gap:7px; min-height:40px; padding:0 16px;
+  border-radius:var(--radius-pill); background:rgba(0,0,0,.6); color:#fff;
+  border:1px solid rgba(255,255,255,.2); font-size:13px; font-weight:700;
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  touch-action:manipulation; transition:transform .12s var(--ease);
+}
+.cmp-fs-close:active{transform:scale(.95);}
+.cmp-fs-close svg{width:16px; height:16px;}
+body.cmp-fs-lock{overflow:hidden;}
 
 .editor-toolbar{
   display:flex; gap:8px; margin-top:12px; overflow-x:auto; padding-bottom:2px;
@@ -454,10 +497,25 @@ input[type="range"]::-webkit-slider-thumb{
   background:#fff; border:3px solid var(--accent); cursor:pointer; margin-top:-7px;
   transition:transform .1s var(--ease);
 }
+/* Trilho do WebKit/Chromium com a mesma altura da linha (4px): assim o margin-top:-7px do thumb ((4 − 18) / 2) o centraliza exatamente nela */
+input[type="range"]::-webkit-slider-runnable-track{height:4px;}
 input[type="range"]::-moz-range-thumb{
   width:18px; height:18px; border-radius:50%; background:#fff; border:3px solid var(--accent); cursor:pointer;
 }
 input[type="range"]::-moz-range-track{background:var(--line); height:4px; border-radius:4px;}
+
+/* Botões − e + ao redor de cada controle deslizante (inseridos por initSliderSteppers) */
+.slider-row.has-stepper{display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; column-gap:12px;}
+.slider-row.has-stepper .slabel{grid-column:1 / -1;}
+.step-btn{
+  width:38px; height:38px; border-radius:50%; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--line); background:var(--bg-elev-2); color:var(--fg-soft);
+  touch-action:manipulation;
+  transition:transform .12s var(--ease), background .15s var(--ease), color .15s var(--ease);
+}
+.step-btn:active{transform:scale(.95); background:var(--bg-elev-3); color:#fff;}
+.step-btn svg{width:16px; height:16px;}
 
 .opt-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
 .opt-btn{
@@ -467,6 +525,19 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
 .opt-btn small{display:block; font-size:10.5px; color:var(--fg-muted); font-weight:600; margin-top:2px;}
 .opt-btn.active{background:var(--accent-dim); border-color:var(--accent); color:#fff;}
 .opt-btn.active small{color:#ffd0d8;}
+
+/* Cor de fundo da colagem: grade de bolinhas (a cor de cada uma vem do mapa COLLAGE_BG, no JS) */
+.bg-row{margin-top:4px;}
+.bg-label{font-size:12.5px; font-weight:700; color:var(--fg-soft); margin-bottom:10px;}
+.bg-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:12px 0; justify-items:center;}
+.bg-dot{
+  width:38px; height:38px; border-radius:50%; padding:0;
+  border:1px solid rgba(255,255,255,.22);
+  touch-action:manipulation;
+  transition:box-shadow .15s var(--ease), transform .12s var(--ease);
+}
+.bg-dot:active{transform:scale(.95);}
+.bg-dot.active{box-shadow:0 0 0 2px var(--bg-elev-1), 0 0 0 4px var(--accent);}
 
 .upscale-badge{
   display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700;
@@ -646,8 +717,16 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
 .switch.on{background:var(--accent); border-color:var(--accent);}
 .switch.on .knob{transform:translateX(19px);}
 .select-inline{
-  background:var(--bg-elev-2); border:1px solid var(--line); color:#fff; font-size:13px; font-weight:700;
-  padding:8px 12px; border-radius:var(--radius-pill);
+  background-color:var(--bg-elev-2); border:1px solid var(--line); color:#fff; font-size:13px; font-weight:700;
+  -webkit-appearance:none; appearance:none;
+  width:120px; height:36px; flex-shrink:0;
+  padding:0 28px;
+  text-align:center; text-align-last:center;
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+  background-size:12px 12px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  border-radius:var(--radius-pill);
 }
 
 /* =========================================================
@@ -838,6 +917,9 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
             <div class="compare-divider" id="compare-divider">
               <div class="handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4"/></svg></div>
             </div>
+            <button class="cmp-expand" id="btn-cmp-expand" aria-label="Ver comparação em tela cheia">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            </button>
           </div>
         </div>
 
@@ -924,7 +1006,7 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
 
         <div class="notice">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <p>Este navegador processa vídeo localmente e exporta em WebM (compatível e sem perda de qualidade adicional). Conversão para MP4 nativo requer um serviço de backend — a arquitetura já está preparada para essa integração.</p>
+          <p>O vídeo é processado no seu aparelho e exportado em MP4.</p>
         </div>
 
         <div class="editor-actions">
@@ -964,9 +1046,19 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
           <div class="panel-title">Ajustes da colagem</div>
           <div class="slider-row"><div class="slabel"><span>Espaçamento</span><span class="val" id="v-gap">8</span></div><input type="range" id="s-gap" min="0" max="40" value="8"></div>
           <div class="slider-row"><div class="slabel"><span>Arredondamento</span><span class="val" id="v-radius">0</span></div><input type="range" id="s-radius" min="0" max="40" value="0"></div>
-          <div class="opt-grid" style="margin-top:4px;">
-            <button class="opt-btn active" data-collage-bg="black">Fundo preto</button>
-            <button class="opt-btn" data-collage-bg="white">Fundo branco</button>
+          <div class="bg-row">
+            <div class="bg-label">Cor de fundo</div>
+            <div class="bg-grid" role="group" aria-label="Cor de fundo da colagem">
+              <button class="bg-dot active" data-collage-bg="black" aria-label="Fundo preto" aria-pressed="true"></button>
+              <button class="bg-dot" data-collage-bg="white" aria-label="Fundo branco" aria-pressed="false"></button>
+              <button class="bg-dot" data-collage-bg="blue" aria-label="Fundo azul" aria-pressed="false"></button>
+              <button class="bg-dot" data-collage-bg="green" aria-label="Fundo verde" aria-pressed="false"></button>
+              <button class="bg-dot" data-collage-bg="red" aria-label="Fundo vermelho" aria-pressed="false"></button>
+              <button class="bg-dot" data-collage-bg="yellow" aria-label="Fundo amarelo" aria-pressed="false"></button>
+              <button class="bg-dot" data-collage-bg="purple" aria-label="Fundo roxo" aria-pressed="false"></button>
+              <button class="bg-dot" data-collage-bg="pink" aria-label="Fundo rosa" aria-pressed="false"></button>
+              <button class="bg-dot" data-collage-bg="orange" aria-label="Fundo laranja" aria-pressed="false"></button>
+            </div>
           </div>
         </div>
 
@@ -1010,12 +1102,26 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
             </select>
           </div>
           <div class="set-row">
+            <div>
+              <h4>Salvar automaticamente</h4>
+              <p>Salva o projeto ao sair do editor, mesmo sem exportar</p>
+            </div>
+            <button class="switch on" id="set-auto-save" role="switch" aria-checked="true"><div class="knob"></div></button>
+          </div>
+          <div class="set-row">
             <div><h4>Confirmar antes de excluir</h4><p>Pede confirmação ao apagar projetos</p></div>
             <button class="switch on" id="set-confirm-delete" role="switch" aria-checked="true"><div class="knob"></div></button>
           </div>
         </div>
         <div class="section-label">Armazenamento</div>
         <div class="card">
+          <div class="set-row">
+            <div>
+              <h4>Armazenamento usado</h4>
+              <p id="storage-detail">Calculando…</p>
+            </div>
+            <span class="text-muted" id="storage-used">—</span>
+          </div>
           <div class="set-row">
             <div><h4>Limpar histórico</h4><p>Remove todos os projetos salvos neste dispositivo</p></div>
             <button class="btn btn-ghost btn-sm" id="btn-clear-history">Limpar</button>
@@ -1055,7 +1161,7 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
         <div class="tip-card"><div class="num">2</div><div><h4>Melhore</h4><p>Aplique upscale local com Canvas ou prepare-se para conectar um modelo de IA.</p></div></div>
         <div class="tip-card"><div class="num">3</div><div><h4>Ajuste</h4><p>Brilho, contraste, saturação, iluminação e nitidez em tempo real.</p></div></div>
         <div class="tip-card"><div class="num">4</div><div><h4>Compare</h4><p>Arraste o divisor para ver antes e depois lado a lado.</p></div></div>
-        <div class="tip-card"><div class="num">5</div><div><h4>Exporte</h4><p>Baixe em JPG, PNG, PDF, SVG, WebM, GIF ou PPTX.</p></div></div>
+        <div class="tip-card"><div class="num">5</div><div><h4>Exporte</h4><p>Baixe em JPG, PNG, PDF ou MP4.</p></div></div>
         <div style="height:20px;"></div>
       </section>
 
@@ -1096,26 +1202,28 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
         <div class="prose">
           <p>Esta Política de Privacidade descreve como o NOVVA IA ("nós") coleta, usa e protege as informações dos usuários.</p>
           <h3>1. Dados coletados</h3>
-          <p>Podemos coletar informações fornecidas diretamente pelo usuário, como arquivos enviados para processamento, e dados técnicos do dispositivo necessários para o funcionamento do aplicativo.</p>
+          <p>Podemos coletar informações fornecidas diretamente pelo usuário, como arquivos enviados para processamento, e dados técnicos do dispositivo necessários para o funcionamento do aplicativo. Também são coletados dados técnicos e de uso por meio do Google Firebase Analytics (Google), conforme descrito na seção 7.</p>
           <h3>2. Arquivos enviados</h3>
-          <p>Imagens e vídeos selecionados pelo usuário são processados localmente sempre que possível. Quando o processamento exigir um serviço externo, isso será indicado claramente na interface.</p>
+          <p>Imagens e vídeos selecionados pelo usuário são processados localmente sempre que possível. Quando o processamento exigir um serviço externo, isso será indicado claramente na interface. Esses arquivos não são enviados ao Google Analytics.</p>
           <h3>3. Processamento</h3>
           <p>O processamento de imagens e vídeos pode ocorrer no dispositivo do usuário (via Canvas/JavaScript) ou, quando aplicável, por meio de um backend integrado no futuro.</p>
           <h3>4. Armazenamento</h3>
-          <p>O histórico de projetos é salvo localmente no dispositivo do usuário (IndexedDB/localStorage) e não é transmitido a servidores, salvo indicação explícita em atualizações futuras.</p>
+          <p>O histórico de projetos é salvo localmente no dispositivo do usuário (IndexedDB/localStorage) e não é transmitido a servidores, salvo indicação explícita em atualizações futuras. A exceção são os dados de uso coletados pelo Firebase Analytics, descritos na seção 7.</p>
           <h3>5. Serviços de terceiros</h3>
-          <p>Bibliotecas de terceiros carregadas via CDN podem ser utilizadas para funcionalidades específicas de exportação, sujeitas às respectivas políticas de privacidade.</p>
+          <p>O aplicativo utiliza o Google Firebase Analytics (Google LLC) para medir o uso, conforme a seção 7. Bibliotecas de terceiros carregadas via CDN também podem ser utilizadas para funcionalidades específicas de exportação. Todos esses serviços estão sujeitos às respectivas políticas de privacidade.</p>
           <h3>6. Cookies</h3>
-          <p>O NOVVA IA não utiliza cookies de rastreamento. Dados de preferências (como qualidade e formato padrão) são salvos localmente no dispositivo do usuário para melhorar a experiência de uso.</p>
+          <p>O NOVVA IA não utiliza cookies próprios de publicidade. O Google Analytics/Firebase pode usar cookies e armazenamento local do navegador (por exemplo, um identificador anônimo) para medir o uso do aplicativo, conforme a seção 7. Dados de preferências (como qualidade e formato padrão) continuam sendo salvos apenas no dispositivo do usuário para melhorar a experiência de uso.</p>
           <h3>7. Analytics</h3>
-          <p>Atualmente o aplicativo não utiliza ferramentas de analytics ou rastreamento de terceiros.</p>
+          <p>O aplicativo usa o Google Firebase Analytics (Google LLC) para medir o uso e melhorar o aplicativo. Ele pode coletar dados técnicos e de uso, como identificador anônimo, tipo de aparelho, sistema e navegador, idioma, localização aproximada (país/cidade, a partir do endereço IP), telas visualizadas, eventos de uso e tempo de sessão. Esses dados são processados pelo Google.</p>
+          <p>O aplicativo não pede cadastro, nome, e-mail nem telefone. As imagens e os vídeos do usuário não são enviados ao Google Analytics.</p>
+          <p>Para saber mais, consulte a <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style="color:var(--accent); font-weight:700; text-decoration:none;">Política de Privacidade do Google</a> e as <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener noreferrer" style="color:var(--accent); font-weight:700; text-decoration:none;">informações de privacidade do Firebase</a>. Dúvidas ou pedidos sobre dados podem ser enviados ao e-mail informado na seção 10.</p>
           <h3>8. Exclusão de dados</h3>
           <p>O usuário pode excluir seus dados locais a qualquer momento pela seção Ajustes &gt; Limpar histórico.</p>
           <h3>9. Segurança</h3>
           <p>Adotamos medidas técnicas razoáveis para proteger as informações processadas pelo aplicativo.</p>
           <h3>10. Contato</h3>
           <p>Responsável: TAKKA<br>E-mail: suportetakka@gmail.com</p>
-          <p>Última atualização: 26/08/2026</p>
+          <p>Última atualização: 21/11/2026</p>
           <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #222222; text-align: center;">
   <a class="privacy-web-btn" href="https://caatchuup331-dev.github.io/NOVVA-IA/politica.html" target="_blank">
     🌐 Abrir Política de Privacidade Oficial na Web
@@ -1178,6 +1286,14 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
       Ajustes
     </button>
   </nav>
+
+  <!-- ============ COMPARAR EM TELA CHEIA (foto) ============ -->
+  <div class="cmp-fs" id="cmp-fs" aria-label="Comparação em tela cheia">
+    <div class="cmp-fs-body" id="cmp-fs-body"></div>
+    <button class="cmp-fs-close" id="btn-cmp-fs-close" aria-label="Fechar tela cheia">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>Fechar
+    </button>
+  </div>
 
   <!-- ============ HAMBURGER PANEL ============ -->
   <div class="overlay" id="overlay"></div>
@@ -1273,8 +1389,6 @@ input[type="range"]::-moz-range-track{background:var(--line); height:4px; border
 
 <!-- ============ CDN LIBRARIES (export features) ============ -->
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script async src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
 
 <script>
 (function(){
@@ -1315,7 +1429,7 @@ const State = {
     historyId:null
   },
   settings: {
-    quality:0.8, format:'png', confirmDelete:true
+    quality:0.8, format:'png', confirmDelete:true, autoSave:true
   },
   exportCtx: null,        // {type:'image'|'video'|'collage', format, quality}
   pendingAction: null
@@ -1349,6 +1463,15 @@ function debounce(fn, ms){
   let t;
   return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); };
 }
+// Prévia: o palco acompanha a proporção do conteúdo (a altura máxima fica no CSS). Só muda a exibição.
+function setStageRatio(sel, w, h){
+  const el = $(sel);
+  if(!el || !(w > 0) || !(h > 0)) return;
+  const v = w + ' / ' + h;
+  if(el.dataset.ar === v) return;
+  el.dataset.ar = v;
+  el.style.aspectRatio = v;
+}
 
 /* ---------------------------------------------------------------------
    TOAST
@@ -1373,6 +1496,16 @@ const Toast = {
    NAVIGATION
    --------------------------------------------------------------------- */
 const Nav = {
+  // Nome da tela → id da <section> (usado por go() e show())
+  VIEWS:{
+    home:'view-home', create:'view-create', projects:'view-projects',
+    settings:'view-settings', about:'view-about', how:'view-how',
+    help:'view-help', feedback:'view-feedback', privacy:'view-privacy',
+    terms:'view-terms', 'image-editor':'view-image-editor',
+    'video-editor':'view-video-editor', collage:'view-collage'
+  },
+  // Pilha de telas visitadas (a base é sempre o Início); o Voltar do Android desempilha daqui
+  stack:['home'],
   init(){
     $$('.nav-item').forEach(btn=>{
       btn.addEventListener('click', ()=> this.go(btn.dataset.nav));
@@ -1388,17 +1521,20 @@ const Nav = {
       el.addEventListener('click', ()=> this.go(el.dataset.back));
     });
     $('#btn-empty-create').addEventListener('click', ()=> this.go('create'));
+    this.initBack();
   },
+  // Navegar: empilha a tela (sem duplicar a atual; o Início zera a pilha) e a mostra
   go(name){
-    const map = {
-      home:'view-home', create:'view-create', projects:'view-projects',
-      settings:'view-settings', about:'view-about', how:'view-how',
-      help:'view-help', feedback:'view-feedback', privacy:'view-privacy',
-      terms:'view-terms', 'image-editor':'view-image-editor',
-      'video-editor':'view-video-editor', collage:'view-collage'
-    };
-    const id = map[name];
+    if(!this.VIEWS[name]) return;
+    if(name === 'home') this.stack = ['home'];
+    else if(this.stack[this.stack.length-1] !== name) this.stack.push(name);
+    this.show(name);
+  },
+  // Só mostra a tela, sem mexer na pilha (também usado pelo Voltar do Android)
+  show(name){
+    const id = this.VIEWS[name];
     if(!id) return;
+    ImageEditor.closeFullCompare(); // a comparação em tela cheia fecha sozinha ao navegar
     const leavingView = State.currentView;
     if(leavingView !== name){
       if(leavingView === 'image-editor') ImageEditor.saveSnapshotToHistory();
@@ -1412,6 +1548,55 @@ const Nav = {
     window.scrollTo({top:0, behavior:'instant' in window ? 'instant':'auto'});
     if(name==='projects') History.render();
     if(name==='home') History.renderRecent();
+    if(name==='settings') Settings.updateStorageInfo();
+  },
+
+  // ----- Botão Voltar do Android (e gesto de voltar) -----
+  // O navegador mantém SEMPRE uma entrada extra de histórico à frente da entrada base. O Voltar consome essa entrada
+  // (popstate); se o usuário deve ficar no app, voltamos a ela com history.go(1). A entrada só pode ser criada dentro de
+  // um toque do usuário: o Chrome do Android ignora entradas criadas sem interação (e o Voltar fecharia o app).
+  // Por isso nunca criamos entradas no carregamento da página nem dentro do popstate.
+  _armed:false, // true = a entrada extra existe e é a atual
+  arm(){
+    if(this._armed) return;
+    try{ history.pushState({novvaBack:true}, ''); this._armed = true; }catch(e){}
+  },
+  initBack(){
+    try{ history.scrollRestoration = 'manual'; }catch(e){} // o history.go(1) não pode restaurar a rolagem antiga (o show() já leva ao topo)
+    this._armed = !!(history.state && history.state.novvaBack); // página recarregada em cima da entrada extra
+    const onTap = (e)=>{ if(e.isTrusted) this.arm(); }; // só toques reais: o click() programático do Voltar não cria entrada
+    document.addEventListener('pointerup', onTap, true);
+    document.addEventListener('click', onTap, true);
+    window.addEventListener('popstate', (e)=> this.onPopState(e));
+  },
+  onPopState(e){
+    if(e.state && e.state.novvaBack){ this._armed = true; return; } // retorno à entrada extra (nosso history.go(1)): ignora
+    this._armed = false; // caímos na entrada base; a extra ficou à frente
+    if($('#processing-modal').classList.contains('show')){
+      // 1) "Processando...": Voltar não faz nada
+    } else if(this.closeTopLayer()){
+      // 2) havia algo aberto por cima: fechou só isso e continua na mesma tela
+    } else if(this.stack.length > 1){
+      // 3) tela anterior: mesmo show() do go(), sem empilhar
+      this.stack.pop();
+      this.show(this.stack[this.stack.length-1]);
+    } else {
+      // 4) Início sem nada aberto: avisa e NÃO volta à entrada extra, então o 2º Voltar fecha o app (rearma no próximo toque)
+      Toast.show('Pressione voltar novamente para sair');
+      return;
+    }
+    history.go(1); // continua no app: volta à entrada extra
+  },
+  // Fecha só o item aberto mais por cima (maior z-index primeiro); devolve true se fechou algum
+  closeTopLayer(){
+    const open = (sel)=> $(sel).classList.contains('show');
+    if(open('#confirm-modal')) $('#confirm-no').click();                // confirmação: "Cancelar" (resolve a Promise e remove os listeners)
+    else if(open('#result-modal')) $('#btn-result-edit-again').click(); // "Arquivo pronto": "Editar novamente"
+    else if(open('#export-sheet')) Export.closeSheet();
+    else if(open('#side-panel')) SidePanel.close();
+    else if(open('#cmp-fs')) ImageEditor.closeFullCompare();
+    else return false;
+    return true;
   }
 };
 
@@ -1551,6 +1736,7 @@ const History = {
     URL.revokeObjectURL(thumbUrl);
     this.render();
     this.renderRecent();
+    if(State.currentView==='settings') Settings.updateStorageInfo();
   },
   // Creates a project on first save, or silently updates the same entry on
   // subsequent saves (e.g. when leaving a project mid-edit) instead of
@@ -1573,6 +1759,7 @@ const History = {
     await DB.add(project);
     this.render();
     this.renderRecent();
+    if(State.currentView==='settings') Settings.updateStorageInfo();
     return project.id;
   },
   // Mídia de origem + estado dos ajustes: o projeto reabre exatamente de onde o usuário parou
@@ -1786,6 +1973,8 @@ const ImageEditor = {
     $('#btn-image-export').addEventListener('click', ()=> Export.openSheet('image'));
     const divider = $('#compare-divider');
     this.bindDivider(divider);
+    $('#btn-cmp-expand').addEventListener('click', ()=> this.openFullCompare());
+    $('#btn-cmp-fs-close').addEventListener('click', ()=> this.closeFullCompare());
   },
   async load(file, saved){
     const img = new Image();
@@ -1797,6 +1986,7 @@ const ImageEditor = {
     State.image.srcImage = img;
     State.image.naturalW = img.naturalWidth;
     State.image.naturalH = img.naturalHeight;
+    setStageRatio('#img-stage', img.naturalWidth, img.naturalHeight);
     State.image.adjust = {brightness:0, contrast:0, saturation:0, exposure:0, sharpness:0};
     State.image.upscaleFactor = 1;
     State.image.compareOn = false;
@@ -1927,6 +2117,32 @@ const ImageEditor = {
     window.addEventListener('mouseup', end);
     window.addEventListener('touchend', end);
   },
+  // ----- Comparar em tela cheia (só foto): overlay próprio, sem a API Fullscreen do navegador -----
+  // Reaproveita o MESMO bloco de comparação (canvases, divisor com os listeners do bindDivider e renderCompare):
+  // ele é movido para o overlay ao abrir e devolvido ao palco ao fechar, com o divisor na posição de antes.
+  openFullCompare(){
+    const fs = $('#cmp-fs'), box = $('#img-compare-box');
+    if(!fs || !box || fs.classList.contains('show') || box.classList.contains('hidden')) return;
+    this._fsPos = { left: $('#compare-divider').style.left, clip: $('.after-layer', box).style.clipPath };
+    $('#cmp-fs-body').appendChild(box);
+    fs.classList.add('show');
+    document.body.classList.add('cmp-fs-lock'); // trava a rolagem do fundo
+    if(this.baseCanvas) this.renderCompare();
+  },
+  closeFullCompare(){
+    const fs = $('#cmp-fs');
+    if(!fs || !fs.classList.contains('show')) return;
+    const box = $('#img-compare-box');
+    $('#img-stage').appendChild(box);
+    if(this._fsPos){
+      $('#compare-divider').style.left = this._fsPos.left;
+      $('.after-layer', box).style.clipPath = this._fsPos.clip;
+      this._fsPos = null;
+    }
+    fs.classList.remove('show');
+    document.body.classList.remove('cmp-fs-lock');
+    if(this.baseCanvas) this.renderCompare();
+  },
   // Produces final full-resolution canvas (adjust + upscale) for export
   async buildFinalCanvas(setStep){
     setStep && setStep('Analisando');
@@ -1951,6 +2167,7 @@ const ImageEditor = {
   // Saves (or updates) a history entry for the current project when the
   // user navigates away from the editor, so work isn't lost if they never export.
   async saveSnapshotToHistory(){
+    if(!State.settings.autoSave) return;
     if(!State.image.file) return;
     const canvas = this._lastAdjusted || this.baseCanvas;
     if(!canvas) return;
@@ -2036,6 +2253,14 @@ function getLayoutsForCount(n){
   return out;
 }
 
+// Cores de fundo da colagem: UM mapa chave → cor, usado na prévia, na exportação e nas bolinhas.
+// Projetos antigos ('black' / 'white') continuam válidos; chave desconhecida = preto.
+const COLLAGE_BG = {
+  black:'#000000', white:'#FFFFFF', blue:'#2563EB', green:'#16A34A', red:'#FF1133',
+  yellow:'#FACC15', purple:'#7C3AED', pink:'#EC4899', orange:'#F97316'
+};
+const collageBgColor = (key)=> Object.prototype.hasOwnProperty.call(COLLAGE_BG, key) ? COLLAGE_BG[key] : COLLAGE_BG.black;
+
 const Collage = {
   init(){
     $('#btn-collage-add').addEventListener('click', ()=> $('#file-input-multi').click());
@@ -2049,14 +2274,23 @@ const Collage = {
       State.collage.radius = Number(e.target.value); $('#v-radius').textContent = e.target.value; this.render();
     });
     $$('[data-collage-bg]').forEach(btn=>{
+      btn.style.background = collageBgColor(btn.dataset.collageBg); // a cor da bolinha vem do mapa único
       btn.addEventListener('click', ()=>{
-        $$('[data-collage-bg]').forEach(b=> b.classList.remove('active'));
-        btn.classList.add('active');
         State.collage.bg = btn.dataset.collageBg;
+        this.markBg();
         this.render();
       });
     });
     $('#btn-collage-export').addEventListener('click', ()=> Export.openSheet('collage'));
+  },
+  // Destaca (anel) a bolinha da cor atual; chave desconhecida cai em preto, como na renderização
+  markBg(){
+    if(!Object.prototype.hasOwnProperty.call(COLLAGE_BG, State.collage.bg)) State.collage.bg = 'black';
+    $$('[data-collage-bg]').forEach(b=>{
+      const on = b.dataset.collageBg === State.collage.bg;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
   },
   buildLayoutOptions(){
     const wrap = $('#layout-scroll');
@@ -2173,7 +2407,7 @@ const Collage = {
     Object.assign(State.collage, p.state || {}, {historyId:p.id});
     $('#s-gap').value = State.collage.gap; $('#v-gap').textContent = State.collage.gap;
     $('#s-radius').value = State.collage.radius; $('#v-radius').textContent = State.collage.radius;
-    $$('[data-collage-bg]').forEach(b=> b.classList.toggle('active', b.dataset.collageBg === State.collage.bg));
+    this.markBg();
     this.buildRatioOptions();
     this.renderThumbs();
     this.render();
@@ -2249,8 +2483,9 @@ const Collage = {
     const stageW = 900;
     const dims = this.ratioWH(State.collage.ratio, stageW);
     canvas.width = dims.w; canvas.height = dims.h;
+    setStageRatio('#collage-stage', dims.w, dims.h);
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = State.collage.bg === 'black' ? '#000' : '#fff';
+    ctx.fillStyle = collageBgColor(State.collage.bg);
     ctx.fillRect(0,0,dims.w,dims.h);
 
     const imgs = State.collage.images;
@@ -2299,8 +2534,17 @@ const Collage = {
   // dentro da própria célula (reenquadrar), sem alterar o layout.
   initCanvasDrag(){
     const canvas = $('#collage-canvas');
+    // O canvas é exibido com object-fit: contain: a imagem pode ficar centralizada com faixas dentro do elemento
+    // (palco limitado a ~60% da altura). Mede o retângulo realmente ocupado pela imagem.
+    const shownRect = ()=>{
+      const r = canvas.getBoundingClientRect();
+      if(!canvas.width || !canvas.height) return r;
+      const k = Math.min(r.width/canvas.width, r.height/canvas.height);
+      const w = canvas.width*k, h = canvas.height*k;
+      return {left:r.left + (r.width-w)/2, top:r.top + (r.height-h)/2, width:w, height:h};
+    };
     const toCanvasPoint = (clientX, clientY)=>{
-      const rect = canvas.getBoundingClientRect();
+      const rect = shownRect();
       return {
         x: (clientX-rect.left) * (canvas.width/rect.width),
         y: (clientY-rect.top) * (canvas.height/rect.height)
@@ -2320,7 +2564,7 @@ const Collage = {
       if(!dragCtx) return;
       const item = State.collage.images[dragCtx.idx];
       if(!item) return;
-      const rect = canvas.getBoundingClientRect();
+      const rect = shownRect();
       const scaleX = canvas.width/rect.width, scaleY = canvas.height/rect.height;
       const dxCanvas = (ev.clientX-dragCtx.startX)*scaleX;
       const dyCanvas = (ev.clientY-dragCtx.startY)*scaleY;
@@ -2355,7 +2599,7 @@ const Collage = {
     const dims = this.ratioWH(State.collage.ratio, exportW);
     tmp.width = dims.w; tmp.height = dims.h;
     const ctx = tmp.getContext('2d');
-    ctx.fillStyle = State.collage.bg === 'black' ? '#000' : '#fff';
+    ctx.fillStyle = collageBgColor(State.collage.bg);
     ctx.fillRect(0,0,dims.w,dims.h);
 
     setStep && setStep('Finalizando');
@@ -2381,6 +2625,7 @@ const Collage = {
   // Saves (or updates) a history entry for the current project when the
   // user navigates away from the editor, so work isn't lost if they never export.
   async saveSnapshotToHistory(){
+    if(!State.settings.autoSave) return;
     if(!State.collage.images.length) return;
     const canvas = $('#collage-canvas');
     if(!canvas || !canvas.width || !canvas.height) return;
@@ -2388,10 +2633,11 @@ const Collage = {
       const blob = await new Promise(res=> canvas.toBlob(res, 'image/png'));
       if(!blob) return;
       const thumbBlob = await Export.makeThumb(blob, 'collage');
+      const d = this.ratioWH(State.collage.ratio, 2000);
       State.collage.historyId = await History.upsert(State.collage.historyId, {
         name: 'novva-ia-colagem.png',
         type: 'collage',
-        resolution: canvas.width+'×'+canvas.height,
+        resolution: d.w + '×' + d.h,
         thumbBlob,
         ...History.capture('collage')
       });
@@ -2449,6 +2695,7 @@ const VideoEditor = {
     State.video.duration = duration;
     State.video.width = video.videoWidth;
     State.video.height = video.videoHeight;
+    setStageRatio('#video-stage', video.videoWidth, video.videoHeight);
     State.video.adjust = {brightness:0, contrast:0, saturation:0, exposure:0, sharpness:0};
     State.video.preset = 'boa';
     State.video.historyId = null;
@@ -2465,6 +2712,7 @@ const VideoEditor = {
     $('#video-duration-pill').textContent = 'Duração: ' + formatDuration(duration);
     $('#video-res-pill').textContent = 'Resolução: ' + video.videoWidth + '×' + video.videoHeight;
     this.applyCssFilter();
+    this.probeFormats(); // decide (assíncrono) se o MP4 aparece na folha de exportação
     Nav.go('video-editor');
     return true;
   },
@@ -2643,6 +2891,346 @@ const VideoEditor = {
     const k = cap / long;
     return {w: Math.round(w*k/2)*2, h: Math.round(h*k/2)*2};
   },
+  // =====================================================================
+  // EXPORTAÇÃO DE VÍDEO (v10) — WebCodecs + Mediabunny, FORA do tempo real.
+  // Quadros: <video> oculto lido com requestVideoFrameCallback; o carimbo de tempo de cada quadro é
+  // metadata.mediaTime (nunca o relógio). O vídeo é PAUSADO enquanto cada quadro é processado e
+  // codificado, então a duração do arquivo não depende da velocidade do aparelho.
+  // =====================================================================
+  MB_VERSION:'1.66.0',
+  _mbPromise:null,
+  fmtReady:null,
+  wcSupported(){
+    return typeof VideoEncoder === 'function' && typeof AudioEncoder === 'function'
+      && typeof VideoFrame === 'function' && typeof AudioData === 'function'
+      && typeof HTMLVideoElement !== 'undefined' && 'requestVideoFrameCallback' in HTMLVideoElement.prototype;
+  },
+  // Carrega o Mediabunny (build ESM via import() dinâmico, só quando preciso). Resolve com o módulo ou null.
+  loadMediabunny(){
+    if(window.Mediabunny) return Promise.resolve(window.Mediabunny);
+    if(!this._mbPromise){
+      const base = 'https://cdn.jsdelivr.net/npm/mediabunny@' + this.MB_VERSION;
+      this._mbPromise = (async ()=>{
+        for(const url of [base + '/dist/bundles/mediabunny.min.mjs', base + '/+esm']){
+          try{
+            const m = await import(url);
+            if(m && m.Output && m.CanvasSource) return m;
+          }catch(e){ console.warn('Mediabunny: falha ao carregar ' + url, e); }
+        }
+        return null;
+      })();
+      this._mbPromise.then(m=>{ if(!m) this._mbPromise = null; }); // permite nova tentativa depois
+    }
+    return this._mbPromise;
+  },
+  _q(M, bps){ return M.Quality ? {quality: new M.Quality({bitrate: bps})} : {bitrate: bps}; },
+  // Bitrate explícito proporcional à resolução: Boa ≈ 0,15 / Médio ≈ 0,12 bit/pixel/quadro, limite 2–12 Mbps
+  _bitrate(w, h, fps, preset){
+    const bpp = preset === 'medio' ? 0.12 : 0.15;
+    return Math.round(Math.min(12e6, Math.max(2e6, w * h * fps * bpp)));
+  },
+  // Desloca o início do áudio em t0 segundos (o vídeo também começa em t0, então os dois andam juntos)
+  _trimAudio(buf, t0){
+    const s = t0 > 0.001 ? Math.round(t0 * buf.sampleRate) : 0;
+    if(s <= 0 || s >= buf.length) return buf;
+    const out = new AudioBuffer({numberOfChannels: buf.numberOfChannels, length: buf.length - s, sampleRate: buf.sampleRate});
+    for(let c = 0; c < buf.numberOfChannels; c++) out.copyToChannel(buf.getChannelData(c).subarray(s), c);
+    return out;
+  },
+  // "O aparelho gera MP4?" (H.264 + AAC). Reutilizável: roda ao abrir o vídeo (probeFormats) e é REFEITA em buildFinalBlob,
+  // na hora de exportar. M é opcional: sem ele, carrega o Mediabunny. Nunca lança erro; devolve true/false.
+  async canMakeMp4(M){
+    try{
+      if(!M){
+        if(!this.wcSupported()) return false;
+        M = await this.loadMediabunny();
+      }
+      if(!M) return false;
+      const d = this.targetDims();
+      const w = d.w - d.w % 2, h = d.h - d.h % 2;
+      const okV = await M.canEncodeVideo('avc', Object.assign({width:w, height:h}, this._q(M, this._bitrate(w, h, 30, State.video.preset))));
+      const okA = okV && await M.canEncodeAudio('aac', Object.assign({numberOfChannels:2, sampleRate:48000}, this._q(M, 128000)));
+      return !!(okV && okA);
+    }catch(e){ console.warn(e); return false; }
+  },
+  // Ao carregar o vídeo: a folha de exportação mostra só MP4 (o usuário nunca escolhe WebM). Aqui só se pré-carrega a
+  // biblioteca; o resultado desta checagem NÃO decide a lista (a que vale é a refeita em buildFinalBlob).
+  probeFormats(){
+    EXPORT_FORMATS.video = [{id:'mp4', label:'MP4', sub:'Recomendado'}];
+    this.fmtReady = this.canMakeMp4();
+  },
+  // Ponto de entrada da exportação de vídeo. format: 'mp4' | 'webm'. Devolve {blob, width, height, ext}.
+  async buildFinalBlob(setStep, format){
+    format = format === 'mp4' ? 'mp4' : 'webm';
+    const M = this.wcSupported() ? await this.loadMediabunny() : null;
+    // O usuário só escolhe MP4. A checagem "o aparelho gera MP4?" é REFEITA aqui, na hora de exportar: a de quando o vídeo
+    // foi aberto pode ter falhado só por falta de internet. Se a biblioteca não carregar ou a checagem falhar: plano B WebM + aviso.
+    if(format === 'mp4' && !(M && await this.canMakeMp4(M))){
+      Toast.show('Não foi possível gerar o MP4 agora. Exportando em WebM.');
+      format = 'webm';
+    }
+    if(!M){
+      // Reserva: sem WebCodecs / requestVideoFrameCallback / biblioteca → método antigo (só WebM)
+      const r = await this.buildFinalBlobLegacy(setStep);
+      return {blob:r.blob, width:r.width, height:r.height, ext:'webm'};
+    }
+    // Reserva automática da leitura direta: se ela falhar antes do 1º quadro (err.directFailedEarly), recomeça do zero com o
+    // <video> oculto ({legacyCapture:true}); a escolha vale também para a tentativa seguinte (plano B WebM). Falhas depois do 1º quadro seguem como antes.
+    let opts = {};
+    const wc = async (fmt)=>{
+      try{ return await this.buildFinalBlobWC(M, setStep, fmt, opts); }
+      catch(err){
+        if(!(err && err.directFailedEarly)) throw err;
+        console.warn('Leitura direta falhou antes do 1º quadro; recomeçando com o <video> oculto.', err);
+        opts = {legacyCapture:true};
+        return await this.buildFinalBlobWC(M, setStep, fmt, opts);
+      }
+    };
+    try{
+      return await wc(format);
+    }catch(err){
+      if(format !== 'mp4') throw err;
+      console.error(err);
+      Toast.show('Não foi possível gerar o MP4 neste aparelho. Exportando em WebM.');
+      return await wc('webm');
+    }
+  },
+  async buildFinalBlobWC(M, setStep, format, opts = {}){
+    const mp4 = format === 'mp4';
+    setStep && setStep('Preparando arquivo');
+    const pv = $('#video-preview');
+    if(pv) pv.pause();
+
+    // Best-effort: mantém a tela ligada durante a exportação (nunca bloqueia se não houver suporte)
+    let wakeLock = null;
+    try{
+      if(navigator.wakeLock && navigator.wakeLock.request){
+        wakeLock = await navigator.wakeLock.request('screen');
+      }
+    }catch(e){ wakeLock = null; }
+
+    const dims = this.targetDims();
+    const outW = dims.w - dims.w % 2, outH = dims.h - dims.h % 2; // valores pares
+    let frameVideo = null, canvas = null, input = null, output = null, watch = null;
+    const cleanup = async ()=>{
+      if(watch){ clearInterval(watch); watch = null; }
+      if(frameVideo){ try{ frameVideo.pause(); frameVideo.removeAttribute('src'); frameVideo.load(); frameVideo.remove(); }catch(e){} frameVideo = null; }
+      if(canvas){ canvas.width = 0; canvas.height = 0; canvas = null; }
+      if(input){ try{ input.dispose(); }catch(e){} input = null; }
+      if(output && output.state !== 'finalized'){ try{ await output.cancel(); }catch(e){} }
+      output = null;
+      this._usSrc = null;
+      if(wakeLock){ try{ wakeLock.release(); }catch(e){} wakeLock = null; }
+    };
+
+    try{
+      // ---- 1) Metadados: fps original e existência de faixa de áudio (leitura só do contêiner) ----
+      setStep && setStep('Analisando');
+      let srcFps = 30, hasAudio = true, audioKnown = false, vTrack = null, direct = false;
+      try{ input = new M.Input({formats: M.ALL_FORMATS, source: new M.BlobSource(State.video.file)}); }catch(e){ input = null; }
+      if(input){
+        try{
+          const vt = await input.getPrimaryVideoTrack();
+          vTrack = vt;                                                    // faixa de vídeo: usada pela leitura direta (CanvasSink)
+          const fm = vt && await vt.computeFrameRateMetrics();
+          const g = fm && fm.bestGuessFrameRate;
+          if(g > 0 && g < 241) srcFps = g;
+        }catch(e){ console.warn('fps:', e); }
+        // Decide o caminho UMA vez (nunca troca no meio): leitura direta (CanvasSink) ou, como reserva, o <video> oculto
+        try{ direct = !!(vTrack && !opts.legacyCapture && await vTrack.canDecode()); }catch(e){ console.warn('canDecode:', e); direct = false; }
+        try{ hasAudio = !!(await input.getPrimaryAudioTrack()); audioKnown = true; }catch(e){ console.warn('áudio:', e); }
+      }
+      // FPS de saída = o do original, no máximo 30: acima disso descarta quadros em passo fixo (60→30, 50→25, 120→30)
+      // Leitura direta (CanvasSink): o limite sobe para 60 (60→60, 30→30, 24→24, 120→60). A reserva continua em 30.
+      const step = Math.max(1, Math.ceil(srcFps / (direct ? 60 : 30) - 0.02));
+      const outFps = srcFps / step;
+      const frameDur = 1 / outFps;
+      const keepGap = (step - 0.5) / srcFps; // intervalo mínimo entre quadros mantidos
+
+      // ---- 2) Áudio: decodificado UMA vez (decodeAudioData), fora do tempo real ----
+      let audioBuf = null;
+      if(hasAudio){
+        try{
+          const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+          const actx = new AC(2, 1, 48000);
+          audioBuf = await actx.decodeAudioData(await State.video.file.arrayBuffer());
+        }catch(e){
+          audioBuf = null;
+          console.warn('decodeAudioData:', e);
+          if(audioKnown) Toast.show('Não foi possível processar o áudio. Exportando sem áudio.', 'error');
+        }
+      }
+      const aCodec = mp4 ? 'aac' : 'opus';
+      if(audioBuf){
+        const okA = await M.canEncodeAudio(aCodec, Object.assign({numberOfChannels: audioBuf.numberOfChannels, sampleRate: audioBuf.sampleRate}, this._q(M, 128000)));
+        if(!okA){ audioBuf = null; Toast.show('Áudio não suportado neste aparelho. Exportando sem áudio.', 'error'); }
+      }
+
+      // ---- 3) Vídeo oculto (mudo, dentro da viewport com 1px e opacity .01, como na versão anterior) ----
+      // Só na reserva (legacyCapture ou canDecode falso). Na leitura direta NÃO existe <video> oculto: a duração vem de State.video.duration.
+      let duration = State.video.duration;
+      if(!direct){
+        const offscreenStyle = 'position:fixed; left:0; top:0; width:1px; height:1px; opacity:0.01; overflow:hidden; z-index:-1; pointer-events:none;';
+        frameVideo = document.createElement('video');
+        frameVideo.muted = true;
+        frameVideo.playsInline = true;
+        frameVideo.preload = 'auto';
+        frameVideo.setAttribute('style', offscreenStyle);
+        frameVideo.src = State.video.url;
+        document.body.appendChild(frameVideo);
+        await new Promise((resolve, reject)=>{
+          frameVideo.onloadedmetadata = resolve;
+          frameVideo.onerror = ()=> reject(new Error('Não foi possível ler o vídeo.'));
+        });
+        frameVideo.onerror = null;
+        duration = frameVideo.duration;
+        if(!duration || !isFinite(duration)){
+          throw new Error('Não foi possível determinar a duração do vídeo.');
+        }
+      }
+
+      // ---- 4) Canvas no tamanho final; ajustes pelas MESMAS fórmulas da prévia (exportFilterString) ----
+      const sharp = this.unsharpAmount();
+      canvas = document.createElement('canvas');
+      canvas.width = outW; canvas.height = outH;
+      const ctx = canvas.getContext('2d', {willReadFrequently: sharp > 0});
+      const adj = State.video.adjust;
+      ctx.filter = (adj.brightness || adj.contrast || adj.saturation || adj.exposure) ? this.exportFilterString() : 'none';
+
+      // ---- 5) Codificação: Mediabunny (CanvasSource + AudioBufferSource), bitrate explícito ----
+      const vq = this._q(M, this._bitrate(outW, outH, outFps, State.video.preset));
+      let vCodec = 'avc';
+      if(!mp4){
+        vCodec = await M.getFirstEncodableVideoCodec(['vp9', 'vp8'], Object.assign({width: outW, height: outH}, vq));
+        if(!vCodec) throw new Error('Nenhum codec de vídeo WebM disponível neste aparelho.');
+      }
+      output = new M.Output({
+        format: mp4 ? new M.Mp4OutputFormat({fastStart:'in-memory'}) : new M.WebMOutputFormat(),
+        target: new M.BufferTarget()
+      });
+      const vSource = new M.CanvasSource(canvas, Object.assign({codec: vCodec}, vq));
+      output.addVideoTrack(vSource);
+      let aSource = null;
+      if(audioBuf){
+        aSource = new M.AudioBufferSource(Object.assign({codec: aCodec}, this._q(M, 128000)));
+        output.addAudioTrack(aSource);
+      }
+      await output.start();
+
+      // ---- 6) Laço de quadros: requestVideoFrameCallback + pausa a cada quadro mantido ----
+      setStep && setStep('Melhorando detalhes');
+      let lastT = -1, lastKept = -1, t0 = 0, kept = 0, busy = false, busySince = 0, lastPct = -1;
+      let lastActivity = performance.now(); // só para detectar travamento; NUNCA usado como tempo do arquivo
+      if(direct){
+        // ---- 6a) Leitura direta (Mediabunny CanvasSink): CADA quadro, em ordem, decodificado sem tocar o vídeo ----
+        // Sem <video> oculto, sem pause/play, sem requestVideoFrameCallback. Reserva: o laço antigo, no else logo abaixo.
+        try{
+          const sink = new M.CanvasSink(vTrack, {width: outW, height: outH, fit: 'fill', poolSize: 2}); // a rotação vem do arquivo
+          await new Promise((resolve, reject)=>{
+            let done = false;
+            const finish = (err)=>{ if(done) return; done = true; if(err) reject(err); else resolve(); };
+            lastActivity = performance.now();
+            // Proteção contra travamento: nenhum quadro avançou por ~30 s → aborta (o cleanup limpa o intervalo `watch`)
+            watch = setInterval(()=>{
+              if(performance.now() - lastActivity > 30000) finish(new Error('A leitura dos quadros do vídeo travou durante a exportação. Tente novamente ou reduza a qualidade.'));
+            }, 1000);
+            (async ()=>{
+              let seen = 0;
+              for await (const {canvas: frame, timestamp} of sink.canvases()){  // `frame` (e não `canvas`) para não sombrear o canvas final
+                if(done) break;
+                lastActivity = performance.now();
+                if(seen++ % step !== 0) continue;                               // descarta por contagem: mantém 1 a cada `step` quadros
+                ctx.drawImage(frame, 0, 0, outW, outH);                         // desenha no canvas final (ctx.filter = ajustes)
+                if(kept === 0){
+                  t0 = timestamp;
+                  if(aSource){
+                    await aSource.add(this._trimAudio(audioBuf, t0));         // áudio entra primeiro, na mesma linha do tempo
+                    aSource.close();
+                    lastActivity = performance.now();
+                  }
+                }
+                if(sharp > 0) this.unsharpMask(ctx, outW, outH, sharp);
+                await vSource.add(timestamp - t0, frameDur);                   // carimbo = timestamp − início (em segundos)
+                kept++;
+                lastActivity = performance.now();
+                const pct = Math.min(99, Math.floor(((timestamp - t0) / Math.max(0.001, duration - t0)) * 100));
+                if(pct !== lastPct){ lastPct = pct; setStep && setStep('Melhorando detalhes ' + pct + '%'); }
+              }
+            })().then(()=> finish(), finish);
+          });
+          if(!kept) throw new Error('A leitura direta não gerou nenhum quadro.');
+        }catch(e){
+          if(kept === 0){                                                       // falhou ANTES do 1º quadro codificado: buildFinalBlob recomeça com o <video> oculto
+            const fe = e instanceof Error ? e : new Error(String(e));
+            fe.directFailedEarly = true;
+            throw fe;
+          }
+          throw e;
+        }
+      } else await new Promise((resolve, reject)=>{
+        let done = false, endedFlag = false;
+        const finish = (err)=>{ if(done) return; done = true; if(err) reject(err); else resolve(); };
+        const next = ()=>{ if(!done) frameVideo.requestVideoFrameCallback(onFrame); };
+        const onFrame = async (now, meta)=>{
+          if(done) return;
+          lastActivity = performance.now();
+          const t = meta.mediaTime;
+          if(t <= lastT + 1e-4){ next(); return; }                        // mesmo quadro reapresentado
+          lastT = t;
+          if(lastKept >= 0 && t - lastKept < keepGap){ next(); return; }  // descarta quadros extras (saída ≤ 30 fps)
+          busy = true; busySince = performance.now();
+          try{
+            ctx.drawImage(frameVideo, 0, 0, outW, outH);                  // captura síncrona do quadro (antes de qualquer await)
+            frameVideo.pause();                                           // segura o vídeo enquanto processa/codifica
+            if(kept === 0){
+              t0 = t;
+              if(aSource){
+                await aSource.add(this._trimAudio(audioBuf, t0));         // áudio entra primeiro, na mesma linha do tempo
+                aSource.close();
+              }
+            }
+            if(sharp > 0) this.unsharpMask(ctx, outW, outH, sharp);
+            await vSource.add(t - t0, frameDur);                          // carimbo = mediaTime − início (em segundos)
+            kept++; lastKept = t;
+            const pct = Math.min(99, Math.floor(((t - t0) / Math.max(0.001, duration - t0)) * 100));
+            if(pct !== lastPct){ lastPct = pct; setStep && setStep('Melhorando detalhes ' + pct + '%'); }
+          }catch(e){ busy = false; finish(e); return; }
+          busy = false;
+          if(done) return;
+          if(endedFlag || t + 1.5 / srcFps >= duration){ finish(); return; }
+          frameVideo.play().catch(()=>{});
+          lastActivity = performance.now();
+          next();
+        };
+        frameVideo.addEventListener('ended', ()=>{ endedFlag = true; if(!busy) finish(); });
+        frameVideo.addEventListener('error', ()=> finish(new Error('Não foi possível ler o vídeo.')));
+        watch = setInterval(()=>{
+          const now = performance.now();
+          if(busy){
+            if(now - busySince > 60000) finish(new Error('A codificação do vídeo travou. Tente novamente ou reduza a qualidade.'));
+          } else if(now - lastActivity > 8000){
+            finish(kept > 0 && lastT >= duration - 0.5 ? null : new Error('A reprodução do vídeo travou durante a exportação. Tente novamente ou reduza a qualidade.'));
+          }
+        }, 500);
+        next();
+        frameVideo.play().catch(e=>{ if(!e || e.name !== 'AbortError') finish(new Error('Não foi possível reproduzir o vídeo para exportação.')); });
+      });
+      if(watch){ clearInterval(watch); watch = null; }
+      try{ frameVideo.pause(); }catch(e){}
+      if(!kept) throw new Error('A exportação não gerou nenhum quadro de vídeo.');
+
+      // ---- 7) Finalização (MP4 com fast start; duração vem dos carimbos de mediaTime) ----
+      setStep && setStep('Finalizando');
+      vSource.close();
+      await output.finalize();
+      const buf = output.target.buffer;
+      if(!buf) throw new Error('A exportação não gerou nenhum dado de vídeo.');
+      const blob = new Blob([buf], {type: mp4 ? 'video/mp4' : 'video/webm'});
+      return {blob, width: outW, height: outH, ext: mp4 ? 'mp4' : 'webm'};
+    } finally {
+      await cleanup();
+    }
+  },
   // Re-encodes the video with filters applied using canvas + MediaRecorder.
   //
   // HISTORY OF THIS FUNCTION (kept as a note so this mistake isn't repeated):
@@ -2707,7 +3295,7 @@ const VideoEditor = {
   // v9: gravação em tempo real com cadência FIXA de 24 FPS (setTimeout com correção de deriva), sem seek
   // e sem mexer no playbackRate. A nitidez é o Unsharp Mask leve em Canvas (unsharpMask, ~28% no máx.),
   // aplicado só no quadro de saída; o filtro SVG feConvolveMatrix não participa da exportação.
-  async buildFinalBlob(setStep){
+  async buildFinalBlobLegacy(setStep){
     if(!('MediaRecorder' in window)){
       throw new Error('MediaRecorder não suportado neste navegador.');
     }
@@ -2936,6 +3524,7 @@ const VideoEditor = {
   // Saves (or updates) a history entry for the current project when the
   // user navigates away from the editor, so work isn't lost if they never export.
   async saveSnapshotToHistory(){
+    if(!State.settings.autoSave) return;
     if(!State.video.file) return;
     try{
       const thumbBlob = await Export.makeThumb(null, 'video');
@@ -3028,18 +3617,15 @@ const EXPORT_FORMATS = {
   image: [
     {id:'jpg', label:'JPG', sub:'Compacto'},
     {id:'png', label:'PNG', sub:'Sem perdas'},
-    {id:'pdf', label:'PDF', sub:'Documento'},
-    {id:'svg', label:'SVG', sub:'Vetorial*'}
+    {id:'pdf', label:'PDF', sub:'Documento'}
   ],
   video: [
-    {id:'webm', label:'WebM', sub:'Recomendado'},
-    {id:'gif', label:'GIF', sub:'Curto'}
+    {id:'mp4', label:'MP4', sub:'Recomendado'}
   ],
   collage: [
     {id:'jpg', label:'JPG', sub:'Compacto'},
     {id:'png', label:'PNG', sub:'Sem perdas'},
-    {id:'pdf', label:'PDF', sub:'Documento'},
-    {id:'pptx', label:'PPTX', sub:'Slide'}
+    {id:'pdf', label:'PDF', sub:'Documento'}
   ]
 };
 
@@ -3071,7 +3657,9 @@ const Export = {
       Nav.go('home');
     });
   },
-  openSheet(type){
+  async openSheet(type){
+    // Vídeo: a lista de formatos (MP4 depende do aparelho) é decidida ao carregar o vídeo; espera se ainda estiver pendente
+    if(type === 'video' && VideoEditor.fmtReady){ try{ await VideoEditor.fmtReady; }catch(e){} }
     this.currentType = type;
     this.currentFormat = this.pickDefaultFormat(type);
     this.currentQuality = State.settings.quality;
@@ -3094,12 +3682,12 @@ const Export = {
         $$('.fmt-btn', grid).forEach(b=> b.classList.remove('active'));
         btn.classList.add('active');
         $('#exp-format').textContent = f.label.toUpperCase();
-        $('#export-quality-row').style.display = (f.id==='png' || f.id==='svg' || f.id==='pptx') ? 'none' : 'flex';
+        $('#export-quality-row').style.display = (f.id==='png') ? 'none' : 'flex';
       });
       grid.appendChild(btn);
     });
 
-    $('#export-quality-row').style.display = (this.currentFormat==='png'||this.currentFormat==='svg'||this.currentFormat==='pptx') ? 'none':'flex';
+    $('#export-quality-row').style.display = (this.currentFormat==='png') ? 'none':'flex';
     $('#exp-format').textContent = this.currentFormat.toUpperCase();
     $('#exp-quality').textContent = type==='video' ? (State.video.preset==='medio' ? 'Médio' : 'Boa')
       : (this.currentQuality>=1 ? 'Máxima' : this.currentQuality>=0.8 ? 'Alta':'Boa');
@@ -3159,12 +3747,9 @@ const Export = {
         await Processing.run(
           ['Preparando arquivo','Analisando','Melhorando detalhes','Aumentando resolução','Finalizando'],
           async (setStep)=>{
-            if(format === 'webm'){
-              const {blob, width, height} = await VideoEditor.buildFinalBlob(setStep);
-              await this.finish(blob, 'novva-ia-video.webm', 'video', width+'×'+height);
-            } else if(format === 'gif'){
-              const gifBlob = await this.exportGif(setStep);
-              await this.finish(gifBlob, 'novva-ia-video.gif', 'video', State.video.width+'×'+State.video.height);
+            if(format === 'mp4' || format === 'webm'){
+              const {blob, width, height, ext} = await VideoEditor.buildFinalBlob(setStep, format);
+              await this.finish(blob, 'novva-ia-video.'+ext, 'video', width+'×'+height);
             }
           }
         );
@@ -3191,69 +3776,17 @@ const Export = {
       const blob = pdf.output('blob');
       return {blob, ext:'pdf', mime:'application/pdf'};
     }
-    if(format === 'svg'){
-      const dataUrl = canvas.toDataURL('image/png');
-      const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="${canvas.width}" height="${canvas.height}" viewBox="0 0 ${canvas.width} ${canvas.height}"><image width="${canvas.width}" height="${canvas.height}" href="${dataUrl}"/></svg>`;
-      const blob = new Blob([svgStr], {type:'image/svg+xml'});
-      return {blob, ext:'svg', mime:'image/svg+xml'};
-    }
-    if(format === 'pptx'){
-      const pptx = new window.PptxGenJS();
-      const slide = pptx.addSlide();
-      const dataUrl = canvas.toDataURL('image/png');
-      const pageW = 10, pageH = 10 * (canvas.height/canvas.width);
-      slide.addImage({data:dataUrl, x:0, y:0, w:pageW, h:Math.min(pageH,7.5)});
-      const blob = await pptx.write('blob');
-      return {blob, ext:'pptx', mime:'application/vnd.openxmlformats-officedocument.presentationml.presentation'};
-    }
     throw new Error('Formato não suportado: '+format);
-  },
-  async exportGif(setStep){
-    setStep && setStep('Preparando arquivo');
-    const srcVideo = $('#video-preview');
-    const off = document.createElement('video');
-    off.src = State.video.url;
-    off.muted = true;
-    await new Promise(res=>{ off.onloadedmetadata = res; });
-
-    const maxGifDuration = Math.min(off.duration, 8); // limit for reasonable file size
-    const fps = 8;
-    const scale = 480 / Math.max(off.videoWidth, off.videoHeight);
-    const w = Math.round(off.videoWidth*scale), h = Math.round(off.videoHeight*scale);
-
-    const gif = new GIF({workers:2, quality:10, width:w, height:h, workerScript:'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'});
-    const canvas = document.createElement('canvas');
-    canvas.width = w; canvas.height = h;
-    const ctx = canvas.getContext('2d');
-    ctx.filter = VideoEditor.cssFilterString();
-
-    setStep && setStep('Analisando');
-    const frameCount = Math.floor(maxGifDuration * fps);
-    for(let i=0;i<frameCount;i++){
-      const t = i / fps;
-      off.currentTime = t;
-      await new Promise(res=>{ off.onseeked = res; });
-      ctx.drawImage(off, 0, 0, w, h);
-      gif.addFrame(ctx, {copy:true, delay:1000/fps});
-      if(i % 10 === 0) setStep && setStep('Melhorando detalhes');
-    }
-
-    setStep && setStep('Finalizando');
-    return new Promise((resolve, reject)=>{
-      gif.on('finished', (blob)=> resolve(blob));
-      gif.on('error', reject);
-      gif.render();
-    });
   },
   async finish(blob, filename, type, resolution){
     this.lastBlob = blob;
     this.lastFilename = filename;
     const thumbBlob = await this.makeThumb(blob, type);
-    await History.add({
-      name: filename,
-      type,
-      resolution,
-      thumbBlob,
+    const st = State[type]; // 'image' | 'video' | 'collage'
+    const itemName = type === 'collage' ? 'novva-ia-colagem.png'
+      : ((st.file && st.file.name) || filename);
+    st.historyId = await History.upsert(st.historyId, {
+      name: itemName, type, resolution, thumbBlob,
       ...History.capture(type)
     });
     $('#result-sub').textContent = 'Seu arquivo foi exportado com sucesso.';
@@ -3329,10 +3862,17 @@ const Settings = {
       e.currentTarget.setAttribute('aria-checked', String(State.settings.confirmDelete));
       this.save();
     });
+    $('#set-auto-save').addEventListener('click', (e)=>{
+      State.settings.autoSave = !State.settings.autoSave;
+      e.currentTarget.classList.toggle('on', State.settings.autoSave);
+      e.currentTarget.setAttribute('aria-checked', String(State.settings.autoSave));
+      this.save();
+    });
     $('#btn-clear-history').addEventListener('click', async ()=>{
       const ok = await Modal.confirm('Limpar histórico?', 'Todos os projetos salvos neste dispositivo serão removidos.');
       if(ok){
         await DB.clear();
+        this.updateStorageInfo();
         History.render(); History.renderRecent();
         Toast.show('Histórico limpo.');
       }
@@ -3352,6 +3892,34 @@ const Settings = {
     $('#set-quality').value = String(State.settings.quality);
     $('#set-format').value = State.settings.format;
     $('#set-confirm-delete').classList.toggle('on', State.settings.confirmDelete);
+    $('#set-auto-save').classList.toggle('on', State.settings.autoSave);
+    $('#set-auto-save').setAttribute('aria-checked', String(State.settings.autoSave));
+  },
+  // Armazenamento usado: soma o tamanho da miniatura + da mídia original de cada projeto salvo.
+  // Nas atualizações não volta para "Calculando…" (evita piscar): só troca o texto quando o valor novo chega.
+  async updateStorageInfo(){
+    const seq = this._storageSeq = (this._storageSeq || 0) + 1; // só a consulta mais recente escreve na tela
+    const usedEl = $('#storage-used'), detailEl = $('#storage-detail');
+    if(!usedEl || !detailEl) return;
+    const sizeOf = (b)=> (b && typeof b.size === 'number') ? b.size : 0;
+    try{
+      const items = await DB.all();
+      let total = 0;
+      items.forEach(p=>{
+        total += sizeOf(p.thumbBlob);
+        if(Array.isArray(p.media)) p.media.forEach(m=>{ total += sizeOf(m && m.file); }); // colagem: lista de {file,...}
+        else total += sizeOf(p.media);                                                    // foto/vídeo: Blob (projeto antigo sem mídia = 0)
+      });
+      if(seq !== this._storageSeq) return;
+      usedEl.textContent = formatBytes(total);
+      const n = items.length;
+      detailEl.textContent = n === 0 ? 'Nenhum projeto salvo'
+        : n === 1 ? '1 projeto salvo neste dispositivo'
+        : n + ' projetos salvos neste dispositivo';
+    }catch(e){
+      console.error(e);
+      if(seq === this._storageSeq) usedEl.textContent = '—';
+    }
   }
 };
 
@@ -3381,6 +3949,58 @@ function initSplash(){
 }
 
 /* ---------------------------------------------------------------------
+   AJUSTE FINO — botões − e + em volta de cada controle deslizante (.slider-row)
+   Só altera input.value e dispara 'input' no próprio controle: a lógica atual (State, valor na tela,
+   prévia/render) roda sozinha, sem duplicar código. IDs, min, max, value e listeners ficam como estão.
+   --------------------------------------------------------------------- */
+function initSliderSteppers(){
+  const HOLD_DELAY = 400, HOLD_EVERY = 80; // ms: segurar repete após 400 ms, depois a cada 80 ms
+  const ICON_MINUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+  const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+  $$('.slider-row').forEach(row=>{
+    const input = $('input[type="range"]', row);
+    if(!input || row.classList.contains('has-stepper')) return;
+    const titleEl = $('.slabel span', row);
+    const title = titleEl ? titleEl.textContent.trim() : '';
+    // 1 unidade por passo, respeitando o min/max do próprio controle; devolve false se já está no limite
+    const step = (dir)=>{
+      const lo = input.min === '' ? 0 : Number(input.min);
+      const hi = input.max === '' ? 100 : Number(input.max);
+      const cur = Number(input.value);
+      const next = clamp(cur + dir, lo, hi);
+      if(next === cur) return false;
+      input.value = String(next);
+      input.dispatchEvent(new Event('input', {bubbles:true}));
+      return true;
+    };
+    const makeBtn = (dir)=>{
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'step-btn';
+      btn.setAttribute('aria-label', (dir < 0 ? 'Diminuir ' : 'Aumentar ') + title);
+      btn.innerHTML = dir < 0 ? ICON_MINUS : ICON_PLUS;
+      let delayId = null, repeatId = null;
+      const stop = ()=>{ clearTimeout(delayId); clearInterval(repeatId); delayId = repeatId = null; };
+      btn.addEventListener('pointerdown', (e)=>{
+        if(e.pointerType === 'mouse' && e.button !== 0) return;
+        try{ btn.releasePointerCapture(e.pointerId); }catch(err){} // toque: sem captura implícita, para perceber a saída do botão
+        stop();
+        if(!step(dir)) return;
+        delayId = setTimeout(()=>{
+          repeatId = setInterval(()=>{ if(!step(dir)) stop(); }, HOLD_EVERY);
+        }, HOLD_DELAY);
+      });
+      ['pointerup','pointercancel','pointerleave'].forEach(t=> btn.addEventListener(t, stop));
+      btn.addEventListener('click', (e)=>{ if(e.detail === 0) step(dir); }); // teclado / leitor de tela (toque já tratado acima)
+      return btn;
+    };
+    row.classList.add('has-stepper');
+    row.insertBefore(makeBtn(-1), input);
+    row.insertBefore(makeBtn(1), input.nextSibling);
+  });
+}
+
+/* ---------------------------------------------------------------------
    BOOTSTRAP
    --------------------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', ()=>{
@@ -3391,6 +4011,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   ImageEditor.init();
   Collage.init();
   VideoEditor.init();
+  initSliderSteppers();
   Export.init();
   Settings.init();
   initFeedback();
